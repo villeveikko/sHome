@@ -1,5 +1,6 @@
 package shome;
  
+import shomeserver.ProcessState;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -36,6 +37,31 @@ public class SceneController {
         else {
             actiontarget.setText("Something went wrong.");
         }
+    }
+    
+    
+    
+    /**
+     * Päivittää ikkunan sekunnin välein
+     */
+    public void updaterThread(){
+        Thread t = new Thread(){
+         public void run(){
+          try {
+     while(true){
+      Thread.sleep(1000);
+      update();
+     }
+    } catch (InterruptedException e) {
+     e.printStackTrace();
+    }
+         }
+         };
+        t.start();
+    }
+    
+    public void update() {
+        
     }
 
 }
