@@ -8,25 +8,25 @@ import java.io.Serializable;
 
 public class ProcessState implements Serializable {
 
-	
-	private static final long serialVersionUID = 1L;
-	//lista laitteista tänne!
-        private Lights light1;
-	
-	public ProcessState(Lights light1) {
-	
-		//luodaan laitteet
+ 
+ private static final long serialVersionUID = 1L;
+ //lista laitteista tÃ¤nne!
+        private Light light1;
+ 
+ public ProcessState(Light light1) {
+ 
+  //luodaan laitteet
                 this.light1 = light1;
-		
-	
-	}
-	
-	
-	 // kyselyt laitteista tänne
-	
+  
+ 
+ }
+ 
+ 
+  // kyselyt laitteista tÃ¤nne
+ 
         public boolean getLight1State() {
             return light1.isState();
         }
 
-		
+  
 }

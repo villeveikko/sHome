@@ -4,7 +4,7 @@ package shomeserver;
 import java.rmi.RemoteException;
 
 /*
- * Etäolion toteutus
+ * EtÃ¤olion toteutus
  */
 public class ProcessImplementation implements Process {
 
@@ -15,39 +15,53 @@ public class ProcessImplementation implements Process {
  private ProcessServer server;
 
  public ProcessImplementation(ProcessServer server) {
-	 super();
-	 this.server = server;
+  super();
+  this.server = server;
  }
  
- public void lightSwitch(String lightName) throws RemoteException { 
+ public boolean lightSwitch(String lightName) throws RemoteException { 
 
-     server.lightSwitch(lightName);
+     if (server.lightSwitch(lightName)) {
+         return true;
+     }
+     return false;
 
  }
  
  /*
- //Poistin catch-lohkon. n�in poikkeus nousee asiakkaalle asti
+ //Poistin catch-lohkon. nï¿½in poikkeus nousee asiakkaalle asti
  public void start(String laitteenNimi, String asiakas) throws RemoteException {
  
-     //Laitetaan testausta varten siiloihin vain 1000. Muuten kest�� kauhean kauan
-	 server.start(laitteenNimi, asiakas, 1000);
+     //Laitetaan testausta varten siiloihin vain 1000. Muuten kestï¿½ï¿½ kauhean kauan
+  server.start(laitteenNimi, asiakas, 1000);
    
  }
  
- //Poistin catch-lohkon. n�in poikkeus nousee asiakkaalle asti
+ //Poistin catch-lohkon. nï¿½in poikkeus nousee asiakkaalle asti
  public void start(String laitteenNimi, String asiakas, int amount) throws RemoteException {
 
-	     server.start(laitteenNimi, asiakas, amount);
-	
+      server.start(laitteenNimi, asiakas, amount);
+ 
  }
 */
  
  public ProcessState getState() throws RemoteException {
-	 return server.getState();
+  return server.getState();
  }
  
- public boolean login(String name) throws RemoteException{
-	 return server.login(name);
+ public boolean login(String name, String password) throws RemoteException{
+  return server.login(name, password);
  }
 
+ public User getUser(String name, String password) throws RemoteException {
+     return server.getUser(name, password);
+ }
+ 
+ public boolean getLightState(String light) throws RemoteException {
+     return server.getLightState(light);
+ }
+ 
+ public boolean writeFxml(String content) throws RemoteException {
+     return server.writeFxml(content);
+ }
 }
