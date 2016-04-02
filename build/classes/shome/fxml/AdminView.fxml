@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+
+<GridPane alignment="CENTER" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="shome.SceneController">
+   <columnConstraints>
+      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+   </columnConstraints>
+   <rowConstraints>
+      <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+   </rowConstraints>
+   <children>
+      <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0">
+         <children>
+            <Text layoutX="255.0" layoutY="47.0" text="Admin">
+               <font>
+                  <Font size="31.0" />
+               </font>
+            </Text>
+            <Button fx:id="createUserButton" layoutX="257.0" layoutY="108.0" mnemonicParsing="false" onAction="#createUserButtonAction" text="Create a User" />
+            <Button layoutX="257.0" layoutY="175.0" mnemonicParsing="false" text="Delete a User" />
+            <Button layoutX="245.0" layoutY="246.0" mnemonicParsing="false" text="Change Password" />
+            <Button fx:id="devicesButton" layoutX="250.0" layoutY="322.0" mnemonicParsing="false" onAction="#devicesButtonAction" text="Control Devices" />
+         </children>
+      </Pane>
+   </children>
+</GridPane>

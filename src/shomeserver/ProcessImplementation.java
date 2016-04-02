@@ -20,35 +20,11 @@ public class ProcessImplementation implements Process {
   this.server = server;
  }
  
- public boolean lightSwitch(String lightName) throws RemoteException { 
-
-     if (server.lightSwitch(lightName)) {
-         return true;
-     }
-     return false;
-
- }
- 
- /*
- //Poistin catch-lohkon. nï¿½in poikkeus nousee asiakkaalle asti
- public void start(String laitteenNimi, String asiakas) throws RemoteException {
- 
-     //Laitetaan testausta varten siiloihin vain 1000. Muuten kestï¿½ï¿½ kauhean kauan
-  server.start(laitteenNimi, asiakas, 1000);
-   
- }
- 
- //Poistin catch-lohkon. nï¿½in poikkeus nousee asiakkaalle asti
- public void start(String laitteenNimi, String asiakas, int amount) throws RemoteException {
-
-      server.start(laitteenNimi, asiakas, amount);
- 
- }
-*/
- 
  public ProcessState getState() throws RemoteException {
   return server.getState();
  }
+ 
+ 
  
  public boolean login(String name, String password) throws RemoteException{
   return server.login(name, password);
@@ -58,10 +34,30 @@ public class ProcessImplementation implements Process {
      return server.getUser(name, password);
  }
  
+ 
+ /**
+  * LAITEMETODEJA
+  */
+  public boolean lightSwitch(String lightName) throws RemoteException { 
+     return server.lightSwitch(lightName);
+ }
+ 
  public boolean getLightState(String light) throws RemoteException {
      return server.getLightState(light);
  }
  
+  public boolean doorLockSwitch(String door) throws RemoteException {
+      return server.doorLockSwitch(door);
+  }
+ 
+ public boolean getDoorState(String door) throws RemoteException {
+     return server.getDoorState(door);
+ }
+ 
+ 
+ /**
+  * TIEDOSTOMETODEJA
+  */
  public boolean writeFxml(String content) throws RemoteException {
      return server.writeFxml(content);
  }

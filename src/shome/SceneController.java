@@ -13,15 +13,11 @@ import javafx.scene.control.Button;
 
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.Socket;
-import java.rmi.RemoteException;
-import java.util.Arrays;
 
 
  
@@ -44,6 +40,9 @@ public class SceneController {
     @FXML private Button loginbutton;
     @FXML private TextField username;
     @FXML private PasswordField password;
+    
+    @FXML private Button createUserButton;
+    @FXML private Button devicesButton;
     
     /**
      * LOGIN-SCREEN 
@@ -98,14 +97,40 @@ public class SceneController {
      * ADMIN VIEW
      */
     
-    /**
-     * Testimetodi.
-     * @param event
-     * @throws Exception 
-     */
-    @FXML protected void testButtonAction(ActionEvent event) throws Exception {
-        receiveFile("testi.fxml");
-        /*try{
+    @FXML protected void devicesButtonAction(ActionEvent event) throws Exception {
+        Stage stage;
+            Parent root = FXMLLoader.load(getClass().getResource("fxml/AdminDevices.fxml"));
+        
+            stage=(Stage) devicesButton.getScene().getWindow();
+        
+            Scene scene = new Scene(root, 600, 550);
+        
+            stage.setTitle("sHome - Control Devices");
+            stage.setScene(scene);
+            stage.show();
+    }
+    
+    @FXML protected void createUserButtonAction(ActionEvent event) throws Exception {
+        Stage stage;
+            Parent root = FXMLLoader.load(getClass().getResource("fxml/CreateUserView.fxml"));
+        
+            stage=(Stage) createUserButton.getScene().getWindow();
+        
+            Scene scene = new Scene(root, 600, 550);
+        
+            stage.setTitle("sHome - Create a User");
+            stage.setScene(scene);
+            stage.show();
+    }
+    
+    
+    
+    
+    
+    
+    @FXML protected void light1ButtonAction(ActionEvent event) throws Exception {
+
+        try{
             
             client = new SHomeClient();
             client.lightSwitch("light1");
@@ -117,15 +142,35 @@ public class SceneController {
             
         } catch (Exception e) {
             e.printStackTrace();
-        }*/
+        }
             
+    }
+    
+    @FXML protected void door1ButtonAction(ActionEvent event) throws Exception {
+        try{
+            
+            client = new SHomeClient();
+            client.lightSwitch("door1");
+            if (client.getDoorState("door1")){
+                System.out.println("Wow! Door 1 is now LOCKED!");
+            } else {
+                System.out.println("Wow! Door 1 is now UNLOCKED");
+            }
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
     
     /**
      * APUMETODIT 
      */
     
-    
+    /**
+     * Lähettää palvelimelle pyydön tiedoston lähettämisen, sitten vastaanottaa kyseisen tiedoston ja tallentaa sen src/shome/fxml/ -kansioon. 
+     * Käytä metodia ainoastaan FXML-tyyppisten tiedostojen hakemiseen!
+     * @param filename vastaanotettavan tiedoston nimi
+     */
     public void receiveFile(String filename) {
         
         try {
@@ -181,7 +226,6 @@ public class SceneController {
         }
         
     }
-    
     
     
     /**

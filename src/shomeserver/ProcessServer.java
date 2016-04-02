@@ -10,11 +10,8 @@ import java.io.IOException;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
-import java.io.DataOutputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Arrays;
@@ -32,17 +29,19 @@ public class ProcessServer   {
  private ArrayList<User> users;
  private ProcessState state;
  private Light light1;
+ private Door door1;
  
  public ProcessServer() {
   super();
   admin = new User("admin", "password");
-  admin.setView("Apartments.fxml");
+  admin.setView("AdminView.fxml");
   users = new ArrayList<User>();
   users.add(admin);
   
-  light1 = new Light("Makuuhuone_Valo_1");
+  light1 = new Light();
+  door1 = new Door();
   
-  this.state = new ProcessState(light1);
+  this.state = new ProcessState(light1, door1);
 
   System.out.println("Server started");
  }
@@ -96,6 +95,28 @@ public class ProcessServer   {
      switch(light) {
          case "light1":
              return light1.isState();
+     }
+     return false;
+ }
+ 
+ public boolean doorLockSwitch(String door) {
+     switch(door) {
+         case "door1":
+             if (door1.isState()) {
+                 door1.setState(false);
+                 return false;
+             }
+             else {
+                 door1.setState(true);
+                 return true;
+             }
+     }
+     return false;
+ }
+ public boolean getDoorState(String door) {
+     switch(door) {
+         case "door1":
+             return door1.isState();
      }
      return false;
  }

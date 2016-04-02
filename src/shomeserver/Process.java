@@ -21,4 +21,6 @@ public interface Process extends Remote{
  public boolean writeFxml(String content) throws RemoteException;
  public boolean sendFile(String filename) throws RemoteException, IOException;
  public void startSendFile(String filename) throws RemoteException, IOException;
+ public boolean doorLockSwitch(String door) throws RemoteException;
+ public boolean getDoorState(String door) throws RemoteException;
 }

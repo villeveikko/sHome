@@ -11,8 +11,8 @@
 <padding><Insets top="25" right="25" bottom="10" left="25"/></padding>
 
 <Button fx:id="testbutton"
-        text="Try me!"     
-        onAction="#testButtonAction"/>
+        text="I am a light switch!"     
+        onAction="#light1ButtonAction"/>
  
 
 </GridPane>

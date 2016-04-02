@@ -104,6 +104,27 @@ private String password;
      return false;
  }
  
+  public boolean doorLockSwitch(String door) throws RemoteException {
+      try {
+          return process.doorLockSwitch(door);
+      } catch (RemoteException e) {
+        System.out.println("Error with RMI-call");
+        e.printStackTrace();
+        return false;     }
+  }
+  
+   public boolean getDoorState(String door) throws RemoteException {
+        try{
+            return process.getDoorState(door);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+     
+     return false;
+   }
+
+  
+  
  public boolean login(String name, String password) {
   try {
    return process.login(name, password);
@@ -121,6 +142,11 @@ private String password;
      }
      return null;
  }
+ 
+ 
+ 
+ 
+ 
  
  public boolean writeFxml(String content) {
      try {

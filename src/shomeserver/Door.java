@@ -1,21 +1,22 @@
+
 package shomeserver;
 
 import java.io.Serializable;
 
 /**
  *
+ * @author Käyttäjä
  */
-public class Light extends Thread implements Serializable {
-    
-    private String identification;
+public class Door {
+     private String identification;
     private boolean state;
     
     // Konstruktori
-    public Light(String id) {
+    public Door(String id) {
         this.identification = id;
         this.state = false;
     }
-     public Light() {
+    public Door() {
         this.state = false;
     }
     
@@ -23,9 +24,9 @@ public class Light extends Thread implements Serializable {
      * Getterit ja setterit
      */
     
-    public String getIdentification() {
+   /* public String getIdentification() {
         return identification;
-    }
+    }*/
     public boolean isState() {
         return state;
     }
@@ -33,14 +34,9 @@ public class Light extends Thread implements Serializable {
         this.state = state;
     }
     
-    @Override
+    //@Override
     public void run() {
-        System.out.println("Light switched!");
+        System.out.println("Door lock position switched!!");
     }
-    
-    
-    
-    
-    
     
 }
