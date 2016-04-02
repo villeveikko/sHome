@@ -17,8 +17,9 @@ public interface Process extends Remote{
  public ProcessState getState() throws RemoteException;
  public boolean login(String name, String password) throws RemoteException;
  public User getUser(String name, String password) throws RemoteException;
+ public void createUser(String username, String password, String content) throws RemoteException;
  public boolean getLightState(String light) throws RemoteException;
- public boolean writeFxml(String content) throws RemoteException;
+ public boolean writeFxml(String content, String username) throws RemoteException;
  public boolean sendFile(String filename) throws RemoteException, IOException;
  public void startSendFile(String filename) throws RemoteException, IOException;
  public boolean doorLockSwitch(String door) throws RemoteException;

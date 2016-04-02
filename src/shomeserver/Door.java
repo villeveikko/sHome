@@ -17,7 +17,7 @@ public class Door {
         this.state = false;
     }
     public Door() {
-        this.state = false;
+        this.state = false; // Tässä kohtaa katsottaisiin tila itse laitteesta, jos sellainen olisi olemassa.
     }
     
     /**

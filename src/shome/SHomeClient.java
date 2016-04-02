@@ -143,14 +143,20 @@ private String password;
      return null;
  }
  
+ public void createUser(String username, String password, String content) {
+     try{
+        process.createUser(username, password, content);
+     } catch (RemoteException e) {
+        e.printStackTrace();
+     }
+ }
  
  
  
  
- 
- public boolean writeFxml(String content) {
+ public boolean writeFxml(String content, String username) {
      try {
-         return process.writeFxml(content);
+         return process.writeFxml(content, username);
      } catch (RemoteException e) {
          e.printStackTrace();
      }

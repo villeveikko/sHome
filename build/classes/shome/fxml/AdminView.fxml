@@ -24,8 +24,8 @@
                </font>
             </Text>
             <Button fx:id="createUserButton" layoutX="257.0" layoutY="108.0" mnemonicParsing="false" onAction="#createUserButtonAction" text="Create a User" />
-            <Button layoutX="257.0" layoutY="175.0" mnemonicParsing="false" text="Delete a User" />
-            <Button layoutX="245.0" layoutY="246.0" mnemonicParsing="false" text="Change Password" />
+            <Button fx:id="deleteUserButton" layoutX="257.0" layoutY="175.0" mnemonicParsing="false" text="Delete a User" />
+            <Button fx:id="changePasswordButton" layoutX="245.0" layoutY="246.0" mnemonicParsing="false" text="Change Password" />
             <Button fx:id="devicesButton" layoutX="250.0" layoutY="322.0" mnemonicParsing="false" onAction="#devicesButtonAction" text="Control Devices" />
          </children>
       </Pane>

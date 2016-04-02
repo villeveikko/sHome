@@ -20,24 +20,24 @@
             <Font size="35.0" />
          </font>
       </Label>
-      <TextField layoutX="50.0" layoutY="123.0" />
       <Text layoutX="54.0" layoutY="109.0" text="Username" />
-      <PasswordField layoutX="361.0" layoutY="123.0" />
-      <Text layoutX="258.0" layoutY="205.0" text="Choose Devices" textAlignment="CENTER" />
-      <RadioButton layoutX="25.0" layoutY="258.0" mnemonicParsing="false" text="Lights " />
-      <RadioButton layoutX="25.0" layoutY="281.0" mnemonicParsing="false" text="TV" />
-      <RadioButton layoutX="338.0" layoutY="258.0" mnemonicParsing="false" text="Lights" />
-      <RadioButton layoutX="173.0" layoutY="281.0" mnemonicParsing="false" text="Stereo" />
-      <RadioButton layoutX="173.0" layoutY="258.0" mnemonicParsing="false" text="Doors" />
-      <RadioButton layoutX="338.0" layoutY="281.0" mnemonicParsing="false" text="TV" />
-      <RadioButton layoutX="476.0" layoutY="258.0" mnemonicParsing="false" text="Doors" />
-      <RadioButton layoutX="476.0" layoutY="281.0" mnemonicParsing="false" text="Stereo" />
+      <TextField fx:id="newUsername" layoutX="50.0" layoutY="123.0" />
       <Text layoutX="359.0" layoutY="109.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Password" />
-      <Button layoutX="274.0" layoutY="330.0" mnemonicParsing="false" text="Create" />
-      <RadioButton layoutX="338.0" layoutY="304.0" mnemonicParsing="false" text="Heat" />
-      <RadioButton layoutX="476.0" layoutY="304.0" mnemonicParsing="false" text="Humidity" />
-      <RadioButton layoutX="25.0" layoutY="304.0" mnemonicParsing="false" text="Heat" />
-      <RadioButton layoutX="173.0" layoutY="304.0" mnemonicParsing="false" text="Humidity" />
+      <PasswordField fx:id="newPassword" layoutX="361.0" layoutY="123.0" />
+      <Text layoutX="258.0" layoutY="205.0" text="Choose Devices" textAlignment="CENTER" />
+      <RadioButton fx:id="homeLights" layoutX="25.0" layoutY="258.0" mnemonicParsing="false" text="Lights " />
+      <RadioButton fx:id="homeTv" layoutX="25.0" layoutY="281.0" mnemonicParsing="false" text="TV" />
+      <RadioButton fx:id="cottageLights" layoutX="338.0" layoutY="258.0" mnemonicParsing="false" text="Lights" />
+      <RadioButton fx:id="homeStereo" layoutX="173.0" layoutY="281.0" mnemonicParsing="false" text="Stereo" />
+      <RadioButton fx:id="homeDoors" layoutX="173.0" layoutY="258.0" mnemonicParsing="false" text="Doors" />
+      <RadioButton fx:id="cottageTv" layoutX="338.0" layoutY="281.0" mnemonicParsing="false" text="TV" />
+      <RadioButton fx:id="cottageDoors" layoutX="476.0" layoutY="258.0" mnemonicParsing="false" text="Doors" />
+      <RadioButton fx:id="cottageStereo" layoutX="476.0" layoutY="281.0" mnemonicParsing="false" text="Stereo" />
+      <Button fx:id="createNewUser" layoutX="274.0" layoutY="330.0" mnemonicParsing="false" text="Create" onAction="#createNewUserButtonAction" />
+      <RadioButton fx:id="cottageHeat" layoutX="338.0" layoutY="304.0" mnemonicParsing="false" text="Heat" />
+      <RadioButton fx:id="cottageHumidity" layoutX="476.0" layoutY="304.0" mnemonicParsing="false" text="Humidity" />
+      <RadioButton fx:id="homeHeat" layoutX="25.0" layoutY="304.0" mnemonicParsing="false" text="Heat" />
+      <RadioButton fx:id="homeHumidity" layoutX="173.0" layoutY="304.0" mnemonicParsing="false" text="Humidity" />
       <Text layoutX="108.0" layoutY="242.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Home" />
       <Text layoutX="391.0" layoutY="242.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Summer Cottage" />
    </children>

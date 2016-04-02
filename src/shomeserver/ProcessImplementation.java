@@ -34,6 +34,9 @@ public class ProcessImplementation implements Process {
      return server.getUser(name, password);
  }
  
+ public void createUser(String username, String password, String content) throws RemoteException {
+     server.createUser(username, password, content);
+ } 
  
  /**
   * LAITEMETODEJA
@@ -58,8 +61,8 @@ public class ProcessImplementation implements Process {
  /**
   * TIEDOSTOMETODEJA
   */
- public boolean writeFxml(String content) throws RemoteException {
-     return server.writeFxml(content);
+ public boolean writeFxml(String content, String username) throws RemoteException {
+     return server.writeFxml(content, username);
  }
  
  public boolean sendFile(String filename) throws RemoteException, IOException {

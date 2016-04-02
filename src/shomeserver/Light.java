@@ -16,7 +16,7 @@ public class Light extends Thread implements Serializable {
         this.state = false;
     }
      public Light() {
-        this.state = false;
+        this.state = false; // Tässä kohtaa katsottaisiin tila itse laitteesta, jos sellainen olisi olemassa.
     }
     
     /**

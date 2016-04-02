@@ -72,6 +72,13 @@ public class ProcessServer   {
      }
     return users.get(0);
  }
+ 
+ public void createUser(String username, String password, String content) {
+     User asd = new User(username, password);
+     asd.setView(username + ".fxml");
+     writeFxml(content, username);
+     users.add(asd);
+ }
 
  
  /*
@@ -121,11 +128,11 @@ public class ProcessServer   {
      return false;
  }
  
- public boolean writeFxml(String content) {
+ public boolean writeFxml(String content, String username) {
      
     try {
     
-    File file = new File("C:\\Users\\Käyttäjä\\Desktop\\sHome\\src\\shome\\fxml\\testi.fxml");
+    File file = new File("src\\shome\\fxml\\" + username + ".fxml");
 
     if (!file.exists()) {
 	file.createNewFile();
@@ -136,7 +143,7 @@ public class ProcessServer   {
     bw.write(content);
     bw.close();
 
-    System.out.println("Done");
+    System.out.println("New view for the user " + username + " done.");
     
     return true;
     
