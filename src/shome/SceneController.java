@@ -9,8 +9,19 @@ import javafx.scene.text.Text;
 import javafx.scene.control.TextField;
 import javafx.scene.control.PasswordField;
 import javafx.stage.Stage;
-import java.io.IOException;
 import javafx.scene.control.Button;
+
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.Socket;
+import java.rmi.RemoteException;
+import java.util.Arrays;
 
 
  
@@ -23,6 +34,11 @@ public class SceneController {
         
     private static final long serialVersionUID = 1L;
     private SHomeClient client;
+    
+    public final static int SOCKET_PORT = 13267;      // you may change this
+    public final static String SERVER = "127.0.0.1";  // localhost
+    public final static int FILE_SIZE = 6022386; // file size temporary hard coded, should be bigger than the file to be downloaded
+                                                
     
     @FXML private Text actiontarget;
     @FXML private Button loginbutton;
@@ -38,25 +54,33 @@ public class SceneController {
      * @param event
      * @throws IOException 
      */
-    @FXML protected void handleSubmitButtonAction(ActionEvent event) throws IOException { 
+    @FXML protected void loginButtonAction(ActionEvent event) throws IOException { 
         
         System.out.println("Seuraavat arvot saatiin syötteenä: " + username.getCharacters().toString() + ", " + password.getCharacters().toString());
         
         client = new SHomeClient();
         if (client.login(username.getCharacters().toString(), password.getCharacters().toString())) {
             String view;
+            String viewPath;
         try{ 
  
             view = client.getUser(username.getCharacters().toString(), password.getCharacters().toString()).getView();
+            viewPath = "fxml/" + client.getUser(username.getCharacters().toString(), password.getCharacters().toString()).getView();
+            
+            File file = new File("src\\shome\\fxml\\" + view);
+
+            if (!file.exists()) {
+               receiveFile(view);
+            }
       
             Stage stage;
-            Parent root = FXMLLoader.load(getClass().getResource(view));
+            Parent root = FXMLLoader.load(getClass().getResource(viewPath));
         
             stage=(Stage) loginbutton.getScene().getWindow();
         
             Scene scene = new Scene(root, 600, 550);
         
-            stage.setTitle("sHome login");
+            stage.setTitle("sHome - Welcome");
             stage.setScene(scene);
             stage.show();
         } catch (IOException e) {
@@ -65,7 +89,7 @@ public class SceneController {
           
         }
         else {
-            actiontarget.setText("Something went wrong.");
+            actiontarget.setText("Username or password incorrect.");
         }
     }
     
@@ -80,7 +104,8 @@ public class SceneController {
      * @throws Exception 
      */
     @FXML protected void testButtonAction(ActionEvent event) throws Exception {
-        try{
+        receiveFile("testi.fxml");
+        /*try{
             
             client = new SHomeClient();
             client.lightSwitch("light1");
@@ -92,8 +117,68 @@ public class SceneController {
             
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
+            
+    }
+    
+    /**
+     * APUMETODIT 
+     */
+    
+    
+    public void receiveFile(String filename) {
         
+        try {
+           client = new SHomeClient();    
+           client.startSendFile(filename); // Orders the server to send the file. 
+        } catch (Exception e) { }
+        
+        System.out.println("Yritetään siirtää tiedosto " + filename + " palvelimelta asiakkaalle...");
+        
+        byte[] aByte = new byte[1];
+        int bytesRead;
+
+        Socket clientSocket = null;
+        InputStream is = null;
+
+        try {
+            clientSocket = new Socket("127.0.0.1" , 3248);
+            is = clientSocket.getInputStream();
+        } catch (IOException ex) {
+            // Do exception handling
+        }
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+        if (is != null) {
+
+            FileOutputStream fos = null;
+            BufferedOutputStream bos = null;
+            try {
+                fos = new FileOutputStream("src\\shome\\fxml\\" + filename);
+                bos = new BufferedOutputStream(fos);
+                bytesRead = is.read(aByte, 0, aByte.length);
+                
+                System.out.println("Receiving bytes..."); // Varmistus
+
+                do {
+                        baos.write(aByte);
+                        bytesRead = is.read(aByte);                       
+                } while (bytesRead != -1);
+
+                System.out.println("Finished receiving bytes!"); // Varmistus
+                
+                bos.write(baos.toByteArray());
+                bos.flush();
+                bos.close();
+                clientSocket.close();
+                System.out.println("Tiedoston vastaanottaminen ja kirjoitus onnistui!");
+            } catch (IOException ex) {
+                // Do exception handling
+                System.out.println("Jokin meni pieleen...");
+            }
+            
+        }
         
     }
     

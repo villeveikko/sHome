@@ -30,7 +30,7 @@
         GridPane.columnIndex="1" GridPane.rowIndex="4">
         <Button fx:id="loginbutton"
         text="Sign In"     
-        onAction="#handleSubmitButtonAction"/>
+        onAction="#loginButtonAction"/>
 </HBox>
 
 <Text fx:id="actiontarget"

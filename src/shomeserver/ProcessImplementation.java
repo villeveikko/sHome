@@ -2,6 +2,7 @@
 package shomeserver;
 
 import java.rmi.RemoteException;
+import java.io.IOException;
 
 /*
  * EtÃ¤olion toteutus
@@ -63,5 +64,13 @@ public class ProcessImplementation implements Process {
  
  public boolean writeFxml(String content) throws RemoteException {
      return server.writeFxml(content);
+ }
+ 
+ public boolean sendFile(String filename) throws RemoteException, IOException {
+     return server.sendFile(filename);
+ }
+ 
+ public void startSendFile(String filename) throws RemoteException, IOException {
+     server.startSendFile(filename);
  }
 }

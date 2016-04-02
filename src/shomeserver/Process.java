@@ -1,6 +1,7 @@
 
 package shomeserver;
 
+import java.io.IOException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
@@ -18,4 +19,6 @@ public interface Process extends Remote{
  public User getUser(String name, String password) throws RemoteException;
  public boolean getLightState(String light) throws RemoteException;
  public boolean writeFxml(String content) throws RemoteException;
+ public boolean sendFile(String filename) throws RemoteException, IOException;
+ public void startSendFile(String filename) throws RemoteException, IOException;
 }

@@ -5,6 +5,7 @@ import shomeserver.ProcessState;
 import shomeserver.Process;
 import java.rmi.RMISecurityManager;
 import java.rmi.RemoteException;
+import java.io.IOException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
@@ -128,6 +129,23 @@ private String password;
          e.printStackTrace();
      }
      return false;
+ }
+ 
+ public boolean sendFile(String filename) throws IOException {
+    try{
+       return process.sendFile(filename);  
+    } catch (RemoteException e) {
+     e.printStackTrace();
+    } 
+ return false;
+ }
+ 
+ public void startSendFile(String filename) throws IOException {
+     try {
+         process.startSendFile(filename);
+     } catch (RemoteException e) {
+         e.printStackTrace();
+     }
  }
  
 }
