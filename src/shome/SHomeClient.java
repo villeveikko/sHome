@@ -1,7 +1,6 @@
 package shome;
 
 import shomeserver.User;
-import shomeserver.ProcessState;
 import shomeserver.Process;
 import java.rmi.RMISecurityManager;
 import java.rmi.RemoteException;
@@ -9,9 +8,10 @@ import java.io.IOException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
 
 /*
- * TÃ¤mÃ¤ luokka toimii RMI:n edustajaoliona
+ * Tämä luokka toimii RMI:n edustajaoliona
  */
 public class SHomeClient extends UnicastRemoteObject {
 
@@ -87,7 +87,6 @@ private String password;
    return false;
   }
  }
- 
  /**
   * Kysyy palvelimelta, onko valo päällä vai pois päältä.
   * @param light valon nimi
@@ -97,10 +96,7 @@ private String password;
   public boolean getLightState(String light) {
      try{
      return process.getLightState(light);
-     } catch (RemoteException e) {
-        e.printStackTrace();
-     }
-     
+     } catch (RemoteException e) {}
      return false;
  }
  
@@ -108,22 +104,67 @@ private String password;
       try {
           return process.doorLockSwitch(door);
       } catch (RemoteException e) {
-        System.out.println("Error with RMI-call");
-        e.printStackTrace();
-        return false;     }
+        return false;     
+      }
   }
-  
    public boolean getDoorState(String door) throws RemoteException {
         try{
             return process.getDoorState(door);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
+        } catch (RemoteException e) {}
      
      return false;
    }
 
+   public boolean tvSwitch(String tv) throws RemoteException {
+       try {
+           return process.tvSwitch(tv);
+       } catch (RemoteException e) {}
+       return false;
+   }
+   public boolean getTvState(String tv) throws RemoteException {
+       try {
+           return process.getTvState(tv);
+       } catch (RemoteException e) {}
+       return false;
+   }
   
+   public boolean stereoSwitch(String stereo) throws RemoteException {
+       try {
+           return process.stereoSwitch(stereo);
+       } catch (RemoteException e) {}
+       return false;
+   }
+   public boolean getStereoState(String stereo) throws RemoteException {
+       try {
+           return process.getStereoState(stereo);
+       } catch (RemoteException e) {}
+       return false;
+   }
+   
+   public void setTemperatureValue(String apartment, double amount) {
+       try {
+           process.setTemperatureValue(apartment, amount);
+       } catch (RemoteException e) {}
+   }
+   public double getTemperatureValue(String apartment) {
+       try {
+           return process.getTemperatureValue(apartment);
+       } catch (RemoteException e) {}
+       return 18.0;
+   }
+   
+   public void setHumidityValue(String apartment, double amount) {
+       try {
+           process.setHumidityValue(apartment, amount);
+       } catch (RemoteException e) {}
+   }
+   public double getHumidityValue(String apartment) {
+       try {
+           return process.getHumidityValue(apartment);
+       } catch (RemoteException e) {}
+       return 50.0;
+   }
+
   
  public boolean login(String name, String password) {
   try {
@@ -142,18 +183,37 @@ private String password;
     return false;
  }
  
- public User getUser(String name, String password) {
+ public User getUser(String name) {
      try{
-     return process.getUser(name, password);
+     return process.getUser(name);
      } catch (RemoteException e) {
         e.printStackTrace();
      }
      return null;
  }
+ public ArrayList<String> getUsers() {
+     try {
+         return process.getUsers();
+     } catch (RemoteException e) {return null;}
+ }
  
  public void createUser(String username, String password, String content) {
      try{
         process.createUser(username, password, content);
+     } catch (RemoteException e) {
+        e.printStackTrace();
+     }
+ }
+ public void deleteUser(User user) throws IOException {
+     try{
+        process.deleteUser(user);
+     } catch (RemoteException e) {
+        e.printStackTrace();
+     }
+ }
+ public void changeUserPassword(User user, String password) throws IOException {
+     try {
+         process.changeUserPassword(user, password);
      } catch (RemoteException e) {
         e.printStackTrace();
      }

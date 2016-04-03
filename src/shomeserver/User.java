@@ -2,6 +2,7 @@
 package shomeserver;
 
 import java.io.Serializable;
+import java.util.Iterator;
 
 /**
  *
@@ -48,5 +49,9 @@ public class User implements Serializable {
 
     public void setView(String view) {
         this.view = view;
+    }
+
+    Iterator<String> listIterator() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

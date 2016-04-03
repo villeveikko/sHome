@@ -22,6 +22,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 /*
@@ -35,9 +36,7 @@ public class ProcessServer   {
     
  private User admin;
  private ArrayList<User> users;
- 
- private ProcessState state;
- 
+  
  private Light light1;
  private Light light2;
  private Light light3;
@@ -48,9 +47,20 @@ public class ProcessServer   {
  private Light light8;
  private Light light9;
  private Door door1;
+ private Door door2;
+ private Door door3;
+ private Tv tv1;
+ private Tv tv2;
+ private Tv tv3;
+ private Stereo stereo1;
+ private Stereo stereo2;
+ private Stereo stereo3;
+ private TemperatureController temp1;
+ private TemperatureController temp2;
+ private HumidityController humi1;
+ private HumidityController humi2;
  
-  final static String FILE_NAME = "src\\shomeserver\\UserList.txt";
-  final static String OUTPUT_FILE_NAME = "src\\shomeserver\\UserList.txt";
+  final static String FILE_NAME = "shomeserver\\UserList.txt";
   final static Charset ENCODING = StandardCharsets.UTF_8;
  
  public ProcessServer() {
@@ -70,18 +80,24 @@ public class ProcessServer   {
   light8 = new Light();
   light9 = new Light();
   door1 = new Door();
-  
-  this.state = new ProcessState(light1, door1);
+  door2 = new Door();
+  door3 = new Door();
+  tv1 = new Tv();
+  tv2 = new Tv();
+  tv3 = new Tv();
+  stereo1 = new Stereo();
+  stereo2 = new Stereo();
+  stereo3 = new Stereo();
+  temp1 = new TemperatureController();
+  temp2 = new TemperatureController();
+  humi1 = new HumidityController();
+  humi2 = new HumidityController();
   
   
 
   System.out.println("Server started");
  }
  
- 
- public ProcessState getState(){
-  return state;
- }
  
  public boolean login(String name, String password) {
      for (int i = 0; i < users.size(); i++) {
@@ -106,14 +122,21 @@ public class ProcessServer   {
      return false;
   }
  
- public User getUser(String name, String password) {
+ public User getUser(String name) {
 
      for (int i = 0; i < users.size(); i++) {
-        if (users.get(i).getUsername().equals(name) && users.get(i).getPassword().equals(password)) {
+        if (users.get(i).getUsername().equals(name)) {
             return users.get(i);
         }
      }
     return users.get(0);
+ }
+ public ArrayList<String> getUsers() {
+     ArrayList<String> lista = new ArrayList();
+     for (int i = 0; i < users.size(); i++) {
+         lista.add(users.get(i).getUsername());
+     }
+     return lista;
  }
  
  public void createUser(String username, String password, String content)  {
@@ -124,10 +147,24 @@ User asd = new User(username, password);
      writeFxml(content, username);
      users.add(asd);
      updateUserList(asd);
- } catch (IOException e) {
-}
+ } catch (IOException e) {}
  }
-
+ public void deleteUser(User user) {
+     removeUserList(user);
+     users.remove(user);
+     interpretUserList();
+ }
+ public void changeUserPassword(User user, String password) {
+     try {
+         User u = new User(user.getUsername(), password, user.getView());
+         users.add(u);
+         updateUserList(u);
+         removeUserList(user);
+         interpretUserList();
+     } catch (IOException e) {}
+     
+ }
+ 
  
  /*
   * 
@@ -220,25 +257,15 @@ User asd = new User(username, password);
  }
  public boolean getLightState(String light) {
      switch(light) {
-         case "light1":
-         return light1.isState();
-         case "light2":
-         return light2.isState();
-         case "light3":
-         return light3.isState();
-         case "light4":
-         return light4.isState();
-         case "light5":
-         return light5.isState();
-         case "light6":
-         return light6.isState();
-         case "light7":
-         return light7.isState();
-         case "light8":
-         return light8.isState();
-         case "light9":
-         return light9.isState();
-             
+         case "light1": return light1.isState();
+         case "light2": return light2.isState();
+         case "light3": return light3.isState();
+         case "light4": return light4.isState();
+         case "light5": return light5.isState();
+         case "light6": return light6.isState();
+         case "light7": return light7.isState();
+         case "light8": return light8.isState();
+         case "light9": return light9.isState(); 
      }
      return false;
  }
@@ -254,22 +281,173 @@ User asd = new User(username, password);
                  door1.setState(true);
                  return true;
              }
+             case "door2":
+             if (door2.isState()) {
+                 door2.setState(false);
+                 return false;
+             }
+             else {
+                 door2.setState(true);
+                 return true;
+             }
+             case "door3":
+             if (door3.isState()) {
+                 door3.setState(false);
+                 return false;
+             }
+             else {
+                 door3.setState(true);
+                 return true;
+             }
      }
      return false;
  }
  public boolean getDoorState(String door) {
      switch(door) {
-         case "door1":
-             return door1.isState();
+         case "door1": return door1.isState();
+         case "door2": return door2.isState();
+         case "door3": return door3.isState();
      }
      return false;
  }
+ 
+ public boolean tvSwitch(String tv) {
+     switch(tv) {
+         case "tv1":
+             if (tv1.isState()) {
+                 tv1.setState(false);
+                 return false;
+             }
+             else {
+                 tv1.setState(true);
+                 return true;
+             }
+             case "tv2":
+             if (tv2.isState()) {
+                 tv2.setState(false);
+                 return false;
+             }
+             else {
+                 tv2.setState(true);
+                 return true;
+             }
+             case "tv3":
+             if (tv3.isState()) {
+                 tv3.setState(false);
+                 return false;
+             }
+             else {
+                 tv3.setState(true);
+                 return true;
+             }
+     }
+     return false;
+ }
+ public boolean getTvState(String tv) {
+     switch(tv) {
+         case "tv1": return tv1.isState();
+         case "tv2": return tv2.isState();
+         case "tv3": return tv3.isState();
+     }
+     return false;
+ }
+ 
+ public boolean stereoSwitch(String stereo) {
+     switch(stereo) {
+         case "stereo1":
+             if (stereo1.isState()) {
+                 stereo1.setState(false);
+                 return false;
+             }
+             else {
+                 stereo1.setState(true);
+                 return true;
+             }
+             case "stereo2":
+             if (stereo2.isState()) {
+                 stereo2.setState(false);
+                 return false;
+             }
+             else {
+                 stereo2.setState(true);
+                 return true;
+             }
+             case "stereo3":
+             if (stereo3.isState()) {
+                 stereo3.setState(false);
+                 return false;
+             }
+             else {
+                 stereo3.setState(true);
+                 return true;
+             }
+     }
+     return false;
+ }
+ public boolean getStereoState(String stereo) {
+     switch(stereo) {
+         case "stereo1": return stereo1.isState();
+         case "stereo2": return stereo2.isState();
+         case "stereo3": return stereo3.isState();
+     }
+     return false;
+ }
+ 
+ public void setTemperatureValue(String apartment, double amount) {
+     switch (apartment) {
+         case "home": temp1.setTemperature(amount);
+         case "cottage": temp2.setTemperature(amount);
+     }
+ }
+ public double getTemperatureValue(String apartment) {
+     switch (apartment) {
+         case "home": return temp1.getTemperature();
+         case "cottage": return temp2.getTemperature();
+     }
+     return 18.0;
+ }
+ 
+ public void setHumidityValue(String apartment, double amount) {
+     switch (apartment) {
+         case "home": humi1.setHumidity(amount);
+         case "cottage": humi2.setHumidity(amount);
+     }
+ }
+ public double getHumidityValue(String apartment) {
+     switch (apartment) {
+         case "home": return humi1.getHumidity();
+         case "cottage": return humi2.getHumidity();
+     }
+     return 50.0;
+ }
+ 
+ 
+ 
  
  public boolean writeFxml(String content, String username) {
      
     try {
     
-    File file = new File("src\\shome\\fxml\\" + username + ".fxml");
+    File file = new File("shomeserver\\fxml\\" + username + ".fxml");
+
+    if (!file.exists()) {
+	file.createNewFile();
+    }
+
+    FileWriter fw = new FileWriter(file.getAbsoluteFile());
+    BufferedWriter bw = new BufferedWriter(fw);
+    bw.write(content);
+    bw.close();
+
+    
+    
+    
+    } catch (IOException e) {
+        e.printStackTrace();
+    }
+    try {
+    
+    File file = new File("shome\fxml\\" + username + ".fxml");
 
     if (!file.exists()) {
 	file.createNewFile();
@@ -305,30 +483,49 @@ User asd = new User(username, password);
      Files.write(path, aLines, ENCODING);
  }
  public void interpretUserList()  {
-     
+     users.clear();
      try { 
      for (int i = 0; i < readUserList().size(); i++) {
          String temp = readUserList().get(i);
          System.out.println(temp);
          
          String username = temp.substring(1, temp.indexOf(" "));
-         System.out.println(username);
+         //System.out.println(username);
          temp = temp.substring(temp.indexOf(" ") + 1);
-         System.out.println(temp);
+         //System.out.println(temp);
          
          String password = temp.substring(0, temp.indexOf(" "));
-         System.out.println(password);
+         //System.out.println(password);
          temp = temp.substring(temp.indexOf(" ") + 1);
-         System.out.println(temp);
+         //System.out.println(temp);
          
          String view = temp.substring(0, temp.indexOf(">"));
-         System.out.println(view);
+         //System.out.println(view);
          
          User user = new User(username, password, view);
          users.add(user);
          
      }
      } catch (IOException e) {
+         System.out.println(FILE_NAME);
+       System.out.println("Jokin väärin tiedostopolussa!"); 
+     }
+ }
+ public void removeUserList(User user) {
+     try {
+     List<String> aLines = readUserList(); 
+     int index = 1;
+     for (int i = 0; i < readUserList().size(); i++) {
+         String temp = readUserList().get(i);
+         if (temp.contains(user.getUsername()) && temp.contains(user.getPassword())) {
+             index = i;
+         }
+     }
+     aLines.remove(index);
+     Path path = Paths.get(FILE_NAME);
+     Files.write(path, aLines, ENCODING);
+     }
+      catch (IOException e) {
        System.out.println("Jokin väärin tiedostopolussa!"); 
      }
  }
@@ -363,7 +560,7 @@ User asd = new User(username, password);
             }
 
             if (outToClient != null) {
-                File myFile = new File("src\\shomeserver\\fxml\\" + filename);
+                File myFile = new File("shomeserver\\fxml\\" + filename);
                 byte[] mybytearray = new byte[(int) myFile.length()];
 
                 FileInputStream fis = null;
@@ -397,21 +594,5 @@ User asd = new User(username, password);
             }
         } 
  }
- 
- /*
-  * Saatetaan tarvita
-  */
- /*
- public void start(String laitteenNimi, String asiakas, int mï¿½ï¿½rï¿½) {
-  Thread t = new Thread(){
-   public void run(){
-    startDevice(laitteenNimi, asiakas, mï¿½ï¿½rï¿½);
-   }
-  };
-  t.start();
- }
- */
- 
- 
  
 }

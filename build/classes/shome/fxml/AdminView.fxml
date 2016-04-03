@@ -23,8 +23,8 @@
                </font>
             </Text>
             <Button fx:id="createUserButton" layoutX="257.0" layoutY="108.0" mnemonicParsing="false" onAction="#createUserButtonAction" text="Create a User" />
-            <Button fx:id="deleteUserButton" layoutX="257.0" layoutY="175.0" mnemonicParsing="false" text="Delete a User" />
-            <Button fx:id="changePasswordButton" layoutX="245.0" layoutY="246.0" mnemonicParsing="false" text="Change Password" />
+            <Button fx:id="deleteUserButton" layoutX="257.0" layoutY="175.0" mnemonicParsing="false" text="Delete a User" onAction="#deleteUserButtonAction" />
+            <Button fx:id="changePasswordButton" layoutX="245.0" layoutY="246.0" mnemonicParsing="false" text="Change Password" onAction="#changePasswordButtonAction" />
             <Button fx:id="devicesButton" layoutX="250.0" layoutY="322.0" mnemonicParsing="false" onAction="#devicesButtonAction" text="Control Devices" />
             <Button fx:id="logOutButton" layoutX="537.0" layoutY="363.0" mnemonicParsing="false" onAction="#logOutButtonAction" text="Log out">
                <font>

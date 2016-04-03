@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane fx:controller="shome.SceneController" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <Button fx:id="changeTemperatureCottageButton" layoutX="236.0" layoutY="251.0" mnemonicParsing="false" onAction="#changeTemperatureCottageButtonAction" text="Confirm and go back" />
+      <Slider fx:id="temperatureSliderCottage" layoutX="105.0" layoutY="193.0" majorTickUnit="2.0" max="25.0" min="15.0" minorTickCount="1" prefHeight="14.0" prefWidth="379.0" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="18.0" />
+      <Text layoutX="84.0" layoutY="130.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Change temperature - Cottage">
+         <font>
+            <Font size="31.0" />
+         </font>
+      </Text>
+   </children>
+</AnchorPane>

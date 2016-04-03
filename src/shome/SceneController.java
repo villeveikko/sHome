@@ -21,7 +21,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.Socket;
+import java.util.Optional;
+import javafx.collections.FXCollections;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonBar.ButtonData;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.Slider;
 
 
 
@@ -35,7 +41,8 @@ import javafx.scene.control.Alert.AlertType;
 public class SceneController {
         
     private static final long serialVersionUID = 1L;
-    private SHomeClient client;                                        
+    private SHomeClient client; 
+     
     
     
     
@@ -63,31 +70,37 @@ public class SceneController {
             
             String view;
             String viewPath;
+            
         try{ 
  
-            view = client.getUser(username.getCharacters().toString(), password.getCharacters().toString()).getView();
-            viewPath = "fxml/" + client.getUser(username.getCharacters().toString(), password.getCharacters().toString()).getView();
+            view = client.getUser(username.getCharacters().toString()).getView();
+            viewPath = "fxml/" + client.getUser(username.getCharacters().toString()).getView();
             
             System.out.println("Tiedosto: " + viewPath);
             
-            File file = new File("src\\shome\\fxml\\" + view);
+            File file = new File("shome\\fxml\\" + view);
 
             if (!file.exists()) {
                System.out.println("Tiedostoa ei löydy laitteesta, haetaan palvelimelta...");
                receiveFile(view);
+               try{
+               Thread.sleep(3000);
+               } catch (InterruptedException e) {}
+            } else {
+                System.out.println("Tiedosto löytyi!");
             }
-      
-            Stage stage;
+            
+            Stage primaryStage;
             Parent root = FXMLLoader.load(getClass().getResource(viewPath));
         
-            stage=(Stage) loginbutton.getScene().getWindow();
+            primaryStage=(Stage) loginbutton.getScene().getWindow();
         
             Scene scene = new Scene(root, 600, 550);
         
-            stage.setTitle("sHome - Welcome");
-            stage.setScene(scene);
-            stage.show();
-            
+            primaryStage.setTitle("sHome - Welcome");
+            primaryStage.setScene(scene);
+            primaryStage.show();
+                        
             System.out.println("Kirjautuminen onnistui!");
         } catch (IOException e) {
             e.printStackTrace();
@@ -135,8 +148,8 @@ public class SceneController {
         stage.setScene(scene);
         stage.show();
     }
-    
-    @FXML protected void logOutButtonAction (ActionEvent event) throws Exception {
+
+    @FXML protected void logOutButtonAction(ActionEvent event) throws Exception {
         Stage stage;
         Parent root = FXMLLoader.load(getClass().getResource("fxml/Login.fxml"));
         
@@ -149,6 +162,31 @@ public class SceneController {
         stage.show();
     }
     
+    @FXML protected void deleteUserButtonAction(ActionEvent event) throws Exception {
+        Stage stage;
+        Parent root = FXMLLoader.load(getClass().getResource("fxml/DeleteUser.fxml"));
+            
+        stage=(Stage) deleteUserButton.getScene().getWindow();
+        
+        Scene scene = new Scene(root, 600, 550);
+        
+        stage.setTitle("sHome - Delete a User");
+        stage.setScene(scene);
+        stage.show();
+    }
+    
+    @FXML protected void changePasswordButtonAction(ActionEvent event) throws Exception {
+        Stage stage;
+        Parent root = FXMLLoader.load(getClass().getResource("fxml/ChangePassword.fxml"));
+            
+        stage=(Stage) changePasswordButton.getScene().getWindow();
+        
+        Scene scene = new Scene(root, 600, 550);
+        
+        stage.setTitle("sHome - Delete a User");
+        stage.setScene(scene);
+        stage.show();
+    }
     
     /**
      * CREATE NEW USER VIEW
@@ -237,11 +275,21 @@ public class SceneController {
             cottageHeat.setSelected(false);
             cottageHumidity.setSelected(false);
             
-            Alert alert = new Alert(AlertType.INFORMATION);
+            Alert alert = new Alert(AlertType.CONFIRMATION);
             alert.setTitle("");
-            alert.setHeaderText(null);
-            alert.setContentText("Creating the user was successful!");
-            alert.showAndWait();
+            alert.setHeaderText("User creation successful");
+            alert.setContentText("The program needs to be restarted in order for the new user to work on this machine. Do you want to do so now or later?");
+
+            ButtonType buttonTypeOne = new ButtonType("Restart now");
+            ButtonType buttonTypeCancel = new ButtonType("Restart later", ButtonData.CANCEL_CLOSE);
+
+            alert.getButtonTypes().setAll(buttonTypeOne, buttonTypeCancel);
+
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.get() == buttonTypeOne){
+                System.exit(0);
+            } 
+            
         }
         else {
             Alert alert = new Alert(AlertType.ERROR);
@@ -265,6 +313,88 @@ public class SceneController {
         stage.setScene(scene);    
         stage.show();
     }
+    
+    /**
+     * DELETE USER VIEW
+     */
+    @FXML private ChoiceBox userlistDelete;
+    @FXML private Button deleteButton;
+    @FXML private Button goBackDeleteButton;
+    
+    @FXML protected void deleteButtonAction(ActionEvent event) throws Exception {
+        String victim = (String)userlistDelete.getValue();
+        
+        Alert alert = new Alert(AlertType.CONFIRMATION);
+            alert.setTitle("");
+            alert.setHeaderText("Confirm user deletion");
+            alert.setContentText("Are you sure you want to delete user " + victim);
+
+            ButtonType buttonTypeOne = new ButtonType("Delete user");
+            ButtonType buttonTypeCancel = new ButtonType("Cancel", ButtonData.CANCEL_CLOSE);
+
+            alert.getButtonTypes().setAll(buttonTypeOne, buttonTypeCancel);
+
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.get() == buttonTypeOne){
+                client.deleteUser(client.getUser(victim));
+                System.out.println("User " + victim + " has been deleted. Good riddance!");
+            } 
+        
+    }
+    @FXML protected void goBackDeleteButtonAction(ActionEvent event) throws Exception {
+        Stage stage;
+        Parent root = FXMLLoader.load(getClass().getResource("fxml/AdminView.fxml"));
+        
+        stage=(Stage) goBackDeleteButton.getScene().getWindow();
+        
+        Scene scene = new Scene(root, 600, 550);
+        
+        stage.setTitle("sHome - Welcome");            
+        stage.setScene(scene);    
+        stage.show();
+    }
+    @FXML protected void userlistDeleteAction() throws Exception {
+        client = new SHomeClient();
+        userlistDelete.setItems(FXCollections.observableArrayList(client.getUsers()));
+    }
+    
+    
+    
+    /**
+     * CHANGE PASSWORD VIEW
+     */
+    @FXML private ChoiceBox userListPassword;
+    @FXML private Button submitPasswordChangeButton;
+    @FXML private PasswordField passwordToCome;
+    
+    @FXML public void userListPasswordAction() throws Exception {
+        client = new SHomeClient();
+        userListPassword.setItems(FXCollections.observableArrayList(client.getUsers()));
+    }
+    
+    @FXML public void submitPasswordChangeButtonAction(ActionEvent event) throws Exception {
+        String username = (String)userListPassword.getValue();
+        client = new SHomeClient();
+        client.changeUserPassword(client.getUser(username), passwordToCome.getCharacters().toString());
+        
+        Alert alert = new Alert(AlertType.INFORMATION);
+            alert.setTitle("");
+            alert.setHeaderText("Success!");
+            alert.setContentText("Changing password on account " + username + " successful!");
+            alert.showAndWait();
+            
+        Stage stage;
+        Parent root = FXMLLoader.load(getClass().getResource("fxml/AdminView.fxml"));
+        
+        stage=(Stage) submitPasswordChangeButton.getScene().getWindow();
+        
+        Scene scene = new Scene(root, 600, 550);
+        
+        stage.setTitle("sHome - Welcome");            
+        stage.setScene(scene);    
+        stage.show();
+    }
+    
     
     /**
      * DEVICE CONTROL VIEW
@@ -295,198 +425,296 @@ public class SceneController {
     @FXML private Button cottageSetHumidity;
     @FXML private Button logOutButtonDevices;
     @FXML private Button goBackDevices;
+    @FXML private Button refreshDevices;
     
     @FXML Text homeFeedback;
     @FXML Text cottageFeedback;
     
     @FXML protected void light1ButtonAction(ActionEvent event) throws Exception {
-
         try{
             client = new SHomeClient();
         } catch (Exception e) {
             e.printStackTrace();
         }
-        
         client.lightSwitch("light1");
         if (client.getLightState("light1")){
-            System.out.println("Wow! The hallway lights are now ON!");
             homeFeedback.setText("The hallway lights are now ON!");
         } else {
-            System.out.println("Wow! The hallway lights are now OFF!");
             homeFeedback.setText("The hallway lights are now OFF!");
         }    
     }
     @FXML protected void light2ButtonAction(ActionEvent event) throws Exception {
-
         try{
             client = new SHomeClient();
         } catch (Exception e) {
             e.printStackTrace();
         }
-        
         client.lightSwitch("light2");
         if (client.getLightState("light2")){
-            System.out.println("Wow! The living room lights are now ON!");
             homeFeedback.setText("The living room lights are now ON!");
         } else {
-            System.out.println("Wow! The living room lights are now OFF!");
             homeFeedback.setText("The living room lights are now OFF!");
         }    
     }
     @FXML protected void light3ButtonAction(ActionEvent event) throws Exception {
-
         try{
             client = new SHomeClient();
         } catch (Exception e) {
             e.printStackTrace();
         }
-        
         client.lightSwitch("light3");
         if (client.getLightState("light3")){
-            System.out.println("Wow! The kitchen lights are now ON!");
             homeFeedback.setText("The kitchen lights are now ON!");
         } else {
-            System.out.println("Wow! The kitchen lights are now OFF!");
             homeFeedback.setText("The kitchen lights are now OFF!");
         }    
     }
     @FXML protected void light4ButtonAction(ActionEvent event) throws Exception {
-
         try{
             client = new SHomeClient();
         } catch (Exception e) {
             e.printStackTrace();
         }
-        
         client.lightSwitch("light4");
         if (client.getLightState("light4")){
-            System.out.println("Wow! The bedroom lights are now ON!");
             homeFeedback.setText("The bedroom lights are now ON!");
         } else {
-            System.out.println("Wow! The bedroom lights are now OFF!");
             homeFeedback.setText("The bedroom lights are now OFF!");
         }    
     }
     @FXML protected void light5ButtonAction(ActionEvent event) throws Exception {
-
         try{
             client = new SHomeClient();
         } catch (Exception e) {
             e.printStackTrace();
         }
-        
         client.lightSwitch("light5");
         if (client.getLightState("light5")){
-            System.out.println("Wow! The garage lights are now ON!");
             homeFeedback.setText("The garage lights are now ON!");
         } else {
-            System.out.println("Wow! The garage lights are now OFF!");
             homeFeedback.setText("The garage lights are now OFF!");
         }    
     }
-    
     @FXML protected void light6ButtonAction(ActionEvent event) throws Exception {
-
         try{
             client = new SHomeClient();
         } catch (Exception e) {
             e.printStackTrace();
         }
-        
         client.lightSwitch("light6");
         if (client.getLightState("light6")){
-            System.out.println("Wow! The hallway lights are now ON!");
             cottageFeedback.setText("The hallway lights are now ON!");
         } else {
-            System.out.println("Wow! The hallway lights are now OFF!");
             cottageFeedback.setText("The hallway lights are now OFF!");
         }    
     }
     @FXML protected void light7ButtonAction(ActionEvent event) throws Exception {
-
         try{
             client = new SHomeClient();
         } catch (Exception e) {
             e.printStackTrace();
         }
-        
         client.lightSwitch("light7");
         if (client.getLightState("light7")){
-            System.out.println("Wow! The living room lights are now ON!");
             cottageFeedback.setText("The living room lights are now ON!");
         } else {
-            System.out.println("Wow! The living room lights are now OFF!");
             cottageFeedback.setText("The living room lights are now OFF!");
         }    
     }
     @FXML protected void light8ButtonAction(ActionEvent event) throws Exception {
-
         try{
             client = new SHomeClient();
         } catch (Exception e) {
             e.printStackTrace();
         }
-        
         client.lightSwitch("light8");
         if (client.getLightState("light8")){
-            System.out.println("Wow! The kitchen lights are now ON!");
             cottageFeedback.setText("The kitchen lights are now ON!");
         } else {
-            System.out.println("Wow! The kitchen lights are now OFF!");
             cottageFeedback.setText("The kitchen lights are now OFF!");
         }    
     }
     @FXML protected void light9ButtonAction(ActionEvent event) throws Exception {
-
         try{
             client = new SHomeClient();
         } catch (Exception e) {
             e.printStackTrace();
         }
-        
         client.lightSwitch("light9");
         if (client.getLightState("light9")){
-            System.out.println("Wow! The bedroom lights are now ON!");
             cottageFeedback.setText("The bedroom lights are now ON!");
         } else {
-            System.out.println("Wow! The bedroom lights are now OFF!");
             cottageFeedback.setText("The bedroom lights are now OFF!");
         }    
     }
     
-    
-    
-    @FXML protected void doorButtonAction(ActionEvent event) throws Exception {
+    @FXML protected void door1ButtonAction(ActionEvent event) throws Exception {
         try{
             client = new SHomeClient();
         } catch (Exception e) {
             e.printStackTrace();
         }
-        
-        
-        
-            client.lightSwitch("door1");
+            client.doorLockSwitch("door1");
             if (client.getDoorState("door1")){
-                System.out.println("Wow! Door 1 is now LOCKED!");
+                homeFeedback.setText("The entrance door to Home is now LOCKED!");
             } else {
-                System.out.println("Wow! Door 1 is now UNLOCKED");
+                homeFeedback.setText("The entrance door to Home is now UNLOCKED");
+            }
+    }
+    @FXML protected void door2ButtonAction(ActionEvent event) throws Exception {
+        try{
+            client = new SHomeClient();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+            client.doorLockSwitch("door2");
+            if (client.getDoorState("door2")){
+                homeFeedback.setText("The garage door to Home is now LOCKED!");
+            } else {
+                homeFeedback.setText("The garage door to Home is now UNLOCKED");
+            }
+    }
+    @FXML protected void door3ButtonAction(ActionEvent event) throws Exception {
+        try{
+            client = new SHomeClient();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+            client.doorLockSwitch("door3");
+            if (client.getDoorState("door3")){
+                cottageFeedback.setText("The entrance door to Cottage is now LOCKED!");
+            } else {
+                cottageFeedback.setText("The entrance door to Cottage is now UNLOCKED");
             }
     }
     
-    @FXML protected void tvButtonAction(ActionEvent event) throws Exception {
-        //TODO
+    @FXML protected void tv1ButtonAction(ActionEvent event) throws Exception {
+        try{
+            client = new SHomeClient();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+            client.tvSwitch("tv1");
+            if (client.getTvState("tv1")){
+                homeFeedback.setText("The living room TV at Home is now ON!");
+            } else {
+                homeFeedback.setText("The living room TV at Home is now OFF!");
+            }
+    }
+    @FXML protected void tv2ButtonAction(ActionEvent event) throws Exception {
+        try{
+            client = new SHomeClient();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+            client.tvSwitch("tv2");
+            if (client.getTvState("tv2")){
+                cottageFeedback.setText("The living room TV at Cottage is now ON!");
+            } else {
+                cottageFeedback.setText("The living room TV at Cottage is now OFF!");
+            }
+    }
+    @FXML protected void tv3ButtonAction(ActionEvent event) throws Exception {
+        try{
+            client = new SHomeClient();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+            client.tvSwitch("tv3");
+            if (client.getTvState("tv3")){
+                cottageFeedback.setText("The kitchen TV at Cottage is now ON!");
+            } else {
+                cottageFeedback.setText("The kitchen TV at Cottage is now OFF!");
+            }
     }
     
-    @FXML protected void stereoButtonAction(ActionEvent event) throws Exception {
-        //TODO
+    @FXML protected void stereo1ButtonAction(ActionEvent event) throws Exception {
+        try{
+            client = new SHomeClient();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+            client.stereoSwitch("stereo1");
+            if (client.getStereoState("stereo1")){
+                homeFeedback.setText("The living room stereo system at Home is now ON!");
+            } else {
+                homeFeedback.setText("The living room stereo system at Home is now OFF!");
+            }
+    }
+    @FXML protected void stereo2ButtonAction(ActionEvent event) throws Exception {
+        try{
+            client = new SHomeClient();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        client.stereoSwitch("stereo2");
+        if (client.getStereoState("stereo2")){
+            homeFeedback.setText("The kitchen stereo system at Home is now ON!");
+        } else {
+            homeFeedback.setText("The kitchen stereo system at Home is now OFF!");
+        }
+    }
+    @FXML protected void stereo3ButtonAction(ActionEvent event) throws Exception {
+        try{
+            client = new SHomeClient();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        client.stereoSwitch("stereo3");
+        if (client.getStereoState("stereo3")){
+            cottageFeedback.setText("The bedroom stereo system at Cottage is now ON!");
+        } else {
+            cottageFeedback.setText("The bedroom stereo system at Cottage is now OFF!");
+        }
     }
     
-    @FXML protected void temperatureButtonAction(ActionEvent event) throws Exception {
-        //TODO
+    @FXML protected void homeSetTemperatureButtonAction(ActionEvent event) throws Exception {
+        Stage stage;
+        Parent root = FXMLLoader.load(getClass().getResource("fxml/ChangeTemperatureHome.fxml"));
+        
+        stage=(Stage) homeSetTemperature.getScene().getWindow();
+        
+        Scene scene = new Scene(root, 600, 550);
+        
+        stage.setTitle("sHome - Change temperature");            
+        stage.setScene(scene);    
+        stage.show();
     }
-    
-    @FXML protected void humidityButtonAction(ActionEvent event) throws Exception {
-        //TODO
+    @FXML protected void homeSetHumidityButtonAction(ActionEvent event) throws Exception {
+        Stage stage;
+        Parent root = FXMLLoader.load(getClass().getResource("fxml/ChangeHumidityHome.fxml"));
+        
+        stage=(Stage) homeSetHumidity.getScene().getWindow();
+        
+        Scene scene = new Scene(root, 600, 550);
+        
+        stage.setTitle("sHome - Change humidity");            
+        stage.setScene(scene);    
+        stage.show();
+    }
+    @FXML protected void cottageSetTemperatureButtonAction(ActionEvent event) throws Exception {
+        Stage stage;
+        Parent root = FXMLLoader.load(getClass().getResource("fxml/ChangeTemperatureCottage.fxml"));
+        
+        stage=(Stage) cottageSetTemperature.getScene().getWindow();
+        
+        Scene scene = new Scene(root, 600, 550);
+        
+        stage.setTitle("sHome - Change temperature");            
+        stage.setScene(scene);    
+        stage.show();
+    }
+    @FXML protected void cottageSetHumidityButtonAction(ActionEvent event) throws Exception {
+        Stage stage;
+        Parent root = FXMLLoader.load(getClass().getResource("fxml/ChangeHumidityCottage.fxml"));
+        
+        stage=(Stage) cottageSetHumidity.getScene().getWindow();
+        
+        Scene scene = new Scene(root, 600, 550);
+        
+        stage.setTitle("sHome - Change humidity");            
+        stage.setScene(scene);    
+        stage.show();
     }
     
     @FXML protected void logOutButtonDevicesAction(ActionEvent event) throws Exception {
@@ -514,6 +742,142 @@ public class SceneController {
         stage.setScene(scene);    
         stage.show();
     }
+    
+    //Kutsuu päivitysmetodin manuaalisesti ohjelmaan
+    @FXML protected void refreshDevicesButtonAction(ActionEvent Event) throws Exception {
+        updaterThread();
+    }
+    
+    /**
+     * Päivittää ikkunan sekunnin välein kutsumalla update-metodia.
+     */
+    public void updaterThread(){ 
+        Thread t = new Thread(){
+         public void run(){
+          try {
+     while(true){
+      Thread.sleep(1000);
+      update();
+     }
+    } catch (Exception e) {
+     e.printStackTrace();
+    }
+         }
+         };
+        t.start();
+    }
+    
+    public void update() throws Exception {
+        client = new SHomeClient();
+        
+        homeEntryLights.setSelected(client.getLightState("light1"));
+        homeLivingLights.setSelected(client.getLightState("light2"));
+        homeKitchenLights.setSelected(client.getLightState("light3"));
+        homeBedroomLights.setSelected(client.getLightState("light4"));
+        homeGarageLights.setSelected(client.getLightState("light5"));
+        cottageEntryLights.setSelected(client.getLightState("light6"));
+        cottageLivingLights.setSelected(client.getLightState("light7"));
+        cottageKitchenLights.setSelected(client.getLightState("light8"));
+        cottageBedroomLights.setSelected(client.getLightState("light9"));
+        
+        homeEntryDoor.setSelected(client.getDoorState("door1"));
+        homeGarageDoor.setSelected(client.getDoorState("door2"));
+        cottageEntryDoor.setSelected(client.getDoorState("door3"));
+        
+        homeLivingTv.setSelected(client.getTvState("tv1"));
+        cottageLivingTv.setSelected(client.getTvState("tv2"));
+        cottageKitchenTv.setSelected(client.getTvState("tv3"));
+        
+        homeLivingStereo.setSelected(client.getStereoState("stereo1"));
+        homeKitchenStereo.setSelected(client.getStereoState("stereo2"));
+        cottageBedroomStereo.setSelected(client.getStereoState("stereo3"));
+        
+        
+    }
+    
+    /**
+     * CHANGE TEMPERATURE/HUMIDITY VIEWS
+     */
+    @FXML private Button changeTemperatureHomeButton;
+    @FXML private Button changeHumidityHomeButton;
+    @FXML private Button changeTemperatureCottageButton;
+    @FXML private Button changeHumidityCottageButton;
+    
+    @FXML private Slider temperatureSliderHome;
+    @FXML private Slider humiditySliderHome;
+    @FXML private Slider temperatureSliderCottage;
+    @FXML private Slider humiditySliderCottage;
+
+    @FXML protected void changeTemperatureHomeButtonAction(ActionEvent event) throws Exception {
+        /*double value = temperatureSliderHome.getValue();
+        client = new SHomeClient();
+        client.setTemperatureValue("home", value);
+        System.out.println("Lämpötila on säädetty nyt arvoon " + client.getTemperatureValue("home"));
+        
+        Stage stage;
+        Parent root = FXMLLoader.load(getClass().getResource());
+        
+        stage = (Stage) changeTemperatureHomeButton.getScene().getWindow();
+        
+        Scene scene = new Scene(root, 600, 550);
+        
+        stage.setTitle("sHome - Welcome");
+        stage.setScene(scene);
+        stage.show();*/
+    }
+    @FXML protected void changeHumidityHomeButtonAction(ActionEvent event) throws Exception {
+        /*double value = humiditySliderHome.getValue();
+        client = new SHomeClient();
+        client.setHumidityValue("home", value);
+        System.out.println("Ilmankosteus on säädetty nyt arvoon " + client.getHumidityValue("home"));
+        
+        Stage stage;
+        Parent root = FXMLLoader.load(getClass().getResource(viewPath));
+        
+        stage=(Stage) changeHumidityHomeButton.getScene().getWindow();
+        
+        Scene scene = new Scene(root, 600, 550);
+        
+        stage.setTitle("sHome - Welcome");
+        stage.setScene(scene);
+        stage.show();*/
+    }
+    
+    @FXML protected void changeTemperatureCottageButtonAction(ActionEvent event) throws Exception {
+        /*double value = temperatureSliderCottage.getValue();
+        client = new SHomeClient();
+        client.setTemperatureValue("cottage", value);
+        System.out.println("Lämpötila on säädetty nyt arvoon " + client.getTemperatureValue("cottage"));
+        
+        Stage stage;
+        Parent root = FXMLLoader.load(getClass().getResource(viewPath));
+        
+        stage=(Stage) changeTemperatureCottageButton.getScene().getWindow();
+        
+        Scene scene = new Scene(root, 600, 550);
+        
+        stage.setTitle("sHome - Welcome");
+        stage.setScene(scene);
+        stage.show();*/
+    }
+    @FXML protected void changeHumidityCottageButtonAction(ActionEvent event) throws Exception {
+        /*double value = humiditySliderCottage.getValue();
+        client = new SHomeClient();
+        client.setHumidityValue("cottage", value);
+        System.out.println("Ilmankosteus on säädetty nyt arvoon " + client.getHumidityValue("cottage"));
+        
+        Stage stage;
+        Parent root = FXMLLoader.load(getClass().getResource(viewPath));
+        
+        stage=(Stage) changeHumidityCottageButton.getScene().getWindow();
+        
+        Scene scene = new Scene(root, 600, 550);
+        
+        stage.setTitle("sHome - Welcome");
+        stage.setScene(scene);
+        stage.show();*/
+    }
+    
     
     /**
      * APUMETODIT 
@@ -607,7 +971,12 @@ public class SceneController {
 "            <Text layoutX=\"140.0\" layoutY=\"50.0\" strokeType=\"OUTSIDE\" strokeWidth=\"0.0\" text=\"Living room\" />\n" +
 "            <Text layoutX=\"279.0\" layoutY=\"50.0\" strokeType=\"OUTSIDE\" strokeWidth=\"0.0\" text=\"Kitchen\" />\n" +
 "            <Text layoutX=\"402.0\" layoutY=\"50.0\" strokeType=\"OUTSIDE\" strokeWidth=\"0.0\" text=\"Bedroom\" />\n" +
-"            <Text layoutX=\"528.0\" layoutY=\"50.0\" strokeType=\"OUTSIDE\" strokeWidth=\"0.0\" text=\"Garage\" />\n";
+"            <Text layoutX=\"528.0\" layoutY=\"50.0\" strokeType=\"OUTSIDE\" strokeWidth=\"0.0\" text=\"Garage\" />\n" +
+"            <Button fx:id=\"refreshDevices\" layoutX=\"545.0\" layoutY=\"5.0\" mnemonicParsing=\"false\" onAction=\"#refreshDevicesButtonAction\" text=\"Refresh\">\n" +
+"               <font>\n" +
+"                  <Font size=\"9.0\" />\n" +
+"               </font>\n" +
+"            </Button>\n";
         
         String homeLights = "<ToggleButton fx:id=\"homeEntryLights\" layoutX=\"25.0\" layoutY=\"65.0\" mnemonicParsing=\"false\" onAction=\"#light1ButtonAction\" text=\"Lights\" />\n" +
 "            <ToggleButton fx:id=\"homeLivingLights\" layoutX=\"147.0\" layoutY=\"65.0\" mnemonicParsing=\"false\" onAction=\"#light2ButtonAction\" text=\"Lights\" />\n" +
@@ -615,21 +984,21 @@ public class SceneController {
 "            <ToggleButton fx:id=\"homeBedroomLights\" layoutX=\"402.0\" layoutY=\"65.0\" mnemonicParsing=\"false\" onAction=\"#light4ButtonAction\" text=\"Lights\" />\n" +
 "            <ToggleButton fx:id=\"homeGarageLights\" layoutX=\"523.0\" layoutY=\"65.0\" mnemonicParsing=\"false\" onAction=\"#light5ButtonAction\" text=\"Lights\" />\n";
         
-        String homeDoors = "<ToggleButton fx:id=\"homeEntryDoor\" layoutX=\"14.0\" layoutY=\"98.0\" mnemonicParsing=\"false\" onAction=\"#doorButtonAction\" text=\"Door Lock\" />\n" +
-"            <ToggleButton fx:id=\"homeGarageDoor\" layoutX=\"511.0\" layoutY=\"98.0\" mnemonicParsing=\"false\" onAction=\"#doorButtonAction\" text=\"Door Lock\" />\n";
+        String homeDoors = "<ToggleButton fx:id=\"homeEntryDoor\" layoutX=\"14.0\" layoutY=\"98.0\" mnemonicParsing=\"false\" onAction=\"#door1ButtonAction\" text=\"Door Lock\" />\n" +
+"            <ToggleButton fx:id=\"homeGarageDoor\" layoutX=\"511.0\" layoutY=\"98.0\" mnemonicParsing=\"false\" onAction=\"#door2ButtonAction\" text=\"Door Lock\" />\n";
         
-        String homeTv = "<ToggleButton fx:id=\"homeLivingTv\" layoutX=\"156.0\" layoutY=\"98.0\" mnemonicParsing=\"false\" onAction=\"#tvButtonAction\" text=\"TV\" />\n";
+        String homeTv = "<ToggleButton fx:id=\"homeLivingTv\" layoutX=\"156.0\" layoutY=\"98.0\" mnemonicParsing=\"false\" onAction=\"#tv1ButtonAction\" text=\"TV\" />\n";
         
-        String homeStereo = "<ToggleButton fx:id=\"homeLivingStereo\" layoutX=\"146.0\" layoutY=\"131.0\" mnemonicParsing=\"false\" onAction=\"#stereoButtonAction\" text=\"Stereo\" />\n" +
-"            <ToggleButton fx:id=\"homeKitchenStereo\" layoutX=\"273.0\" layoutY=\"98.0\" mnemonicParsing=\"false\" onAction=\"#stereoButtonAction\" text=\"Stereo\" />\n";
+        String homeStereo = "<ToggleButton fx:id=\"homeLivingStereo\" layoutX=\"146.0\" layoutY=\"131.0\" mnemonicParsing=\"false\" onAction=\"#stereo1ButtonAction\" text=\"Stereo\" />\n" +
+"            <ToggleButton fx:id=\"homeKitchenStereo\" layoutX=\"273.0\" layoutY=\"98.0\" mnemonicParsing=\"false\" onAction=\"#stereo2ButtonAction\" text=\"Stereo\" />\n";
         
-        String homeHeat = "<Button fx:id=\"homeSetTemperature\" layoutX=\"14.0\" layoutY=\"173.0\" mnemonicParsing=\"false\" onAction=\"#temperatureButtonAction\" text=\"Apartment temperature\">\n" +
+        String homeHeat = "<Button fx:id=\"homeSetTemperature\" layoutX=\"14.0\" layoutY=\"173.0\" mnemonicParsing=\"false\" onAction=\"#homeSetTemperatureButtonAction\" text=\"Apartment temperature\">\n" +
 "               <font>\n" +
 "                  <Font size=\"9.0\" />\n" +
 "               </font>\n" +
 "            </Button>\n";
         
-        String homeHumidity = "<Button fx:id=\"homeSetHumidity\" layoutX=\"490.0\" layoutY=\"173.0\" mnemonicParsing=\"false\" onAction=\"#humidityButtonAction\" text=\"Apartment humidity\">\n" +
+        String homeHumidity = "<Button fx:id=\"homeSetHumidity\" layoutX=\"490.0\" layoutY=\"173.0\" mnemonicParsing=\"false\" onAction=\"#homeSetHumidityButtonAction\" text=\"Apartment humidity\">\n" +
 "               <font>\n" +
 "                  <Font size=\"9.0\" />\n" +
 "               </font>\n" +
@@ -654,20 +1023,20 @@ public class SceneController {
 "            <ToggleButton fx:id=\"cottageKitchenLights\" layoutX=\"359.0\" layoutY=\"66.0\" mnemonicParsing=\"false\" onAction=\"#light8ButtonAction\" text=\"Lights\" />\n" +
 "            <ToggleButton fx:id=\"cottageBedroomLights\" layoutX=\"497.0\" layoutY=\"66.0\" mnemonicParsing=\"false\" onAction=\"#light9ButtonAction\" text=\"Lights\" />\n";
         
-        String cottageDoors = "<ToggleButton fx:id=\"cottageEntryDoor\" layoutX=\"46.0\" layoutY=\"99.0\" mnemonicParsing=\"false\" onAction=\"#doorButtonAction\" text=\"Door Lock\" />\n";
+        String cottageDoors = "<ToggleButton fx:id=\"cottageEntryDoor\" layoutX=\"46.0\" layoutY=\"99.0\" mnemonicParsing=\"false\" onAction=\"#door3ButtonAction\" text=\"Door Lock\" />\n";
         
-        String cottageTv = "<ToggleButton fx:id=\"cottageLivingTv\" layoutX=\"213.0\" layoutY=\"99.0\" mnemonicParsing=\"false\" onAction=\"#tvButtonAction\" text=\"TV\" />\n" +
-"            <ToggleButton fx:id=\"cottageKitchenTv\" layoutX=\"368.0\" layoutY=\"99.0\" mnemonicParsing=\"false\" onAction=\"#tvButtonAction\" text=\"TV\" />\n";
+        String cottageTv = "<ToggleButton fx:id=\"cottageLivingTv\" layoutX=\"213.0\" layoutY=\"99.0\" mnemonicParsing=\"false\" onAction=\"#tv2ButtonAction\" text=\"TV\" />\n" +
+"            <ToggleButton fx:id=\"cottageKitchenTv\" layoutX=\"368.0\" layoutY=\"99.0\" mnemonicParsing=\"false\" onAction=\"#tv3ButtonAction\" text=\"TV\" />\n";
         
-        String cottageStereo = "<ToggleButton fx:id=\"cottageBedroomStereo\" layoutX=\"496.0\" layoutY=\"99.0\" mnemonicParsing=\"false\" onAction=\"#stereoButtonAction\" text=\"Stereo\" />\n";
+        String cottageStereo = "<ToggleButton fx:id=\"cottageBedroomStereo\" layoutX=\"496.0\" layoutY=\"99.0\" mnemonicParsing=\"false\" onAction=\"#stereo3ButtonAction\" text=\"Stereo\" />\n";
         
-        String cottageHeat = "<Button fx:id=\"cottageSetTemperature\" layoutX=\"14.0\" layoutY=\"173.0\" mnemonicParsing=\"false\" onAction=\"#temperatureButtonAction\" text=\"Apartment temperature\">\n" +
+        String cottageHeat = "<Button fx:id=\"cottageSetTemperature\" layoutX=\"14.0\" layoutY=\"173.0\" mnemonicParsing=\"false\" onAction=\"#cottageSetTemperatureButtonAction\" text=\"Apartment temperature\">\n" +
 "               <font>\n" +
 "                  <Font size=\"9.0\" />\n" +
 "               </font>\n" +
 "            </Button>\n";
         
-        String cottageHumidity = "<Button fx:id=\"cottageSetHumidity\" layoutX=\"492.0\" layoutY=\"173.0\" mnemonicParsing=\"false\" onAction=\"#humidityButtonAction\" text=\"Apartment humidity\">\n" +
+        String cottageHumidity = "<Button fx:id=\"cottageSetHumidity\" layoutX=\"492.0\" layoutY=\"173.0\" mnemonicParsing=\"false\" onAction=\"#cottageSetHumidityButtonAction\" text=\"Apartment humidity\">\n" +
 "               <font>\n" +
 "                  <Font size=\"9.0\" />\n" +
 "               </font>\n" +
@@ -727,30 +1096,6 @@ public class SceneController {
         content = content + end;
         
         return content;
-    }
-    
-    
-    /**
-     * Päivittää ikkunan sekunnin välein
-     */
-    public void updaterThread(){
-        Thread t = new Thread(){
-         public void run(){
-          try {
-     while(true){
-      Thread.sleep(1000);
-      update();
-     }
-    } catch (InterruptedException e) {
-     e.printStackTrace();
-    }
-         }
-         };
-        t.start();
-    }
-    
-    public void update() {
-        
     }
 
 }
