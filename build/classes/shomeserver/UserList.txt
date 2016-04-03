@@ -1,0 +1,3 @@
+<admin password AdminView.fxml>
+<kissa katti kissa.fxml>
+<masu misu masu.fxml>

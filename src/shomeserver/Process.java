@@ -16,6 +16,7 @@ public interface Process extends Remote{
  public void start(String laitteenNimi, String asiakas, int amount) throws RemoteException;*/
  public ProcessState getState() throws RemoteException;
  public boolean login(String name, String password) throws RemoteException;
+  public boolean doesUserExist(String username) throws RemoteException;
  public User getUser(String name, String password) throws RemoteException;
  public void createUser(String username, String password, String content) throws RemoteException;
  public boolean getLightState(String light) throws RemoteException;

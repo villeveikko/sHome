@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<SplitPane dividerPositions="0.5" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" orientation="VERTICAL" prefHeight="400.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8" fx:controller="shome.SceneController">
+  <items>
+    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+         <children>
+            <Text layoutX="274.0" layoutY="22.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Home">
+               <font>
+                  <Font size="19.0" />
+               </font>
+            </Text>
+            <Text layoutX="14.0" layoutY="50.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Entry hallway" />
+            <Text layoutX="140.0" layoutY="50.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Living room" />
+            <Text layoutX="279.0" layoutY="50.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Kitchen" />
+            <Text layoutX="402.0" layoutY="50.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Bedroom" />
+            <Text layoutX="528.0" layoutY="50.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Garage" />
+<ToggleButton fx:id="homeEntryLights" layoutX="25.0" layoutY="65.0" mnemonicParsing="false" onAction="#lightButtonAction" text="Lights" />
+            <ToggleButton fx:id="homeLivingLights" layoutX="147.0" layoutY="65.0" mnemonicParsing="false" onAction="#lightButtonAction" text="Lights" />
+            <ToggleButton fx:id="homeKitchenLights" layoutX="275.0" layoutY="65.0" mnemonicParsing="false" onAction="#lightButtonAction" text="Lights" />
+            <ToggleButton fx:id="homeBedroomLights" layoutX="402.0" layoutY="65.0" mnemonicParsing="false" onAction="#lightButtonAction" text="Lights" />
+            <ToggleButton fx:id="homeGarageLights" layoutX="523.0" layoutY="65.0" mnemonicParsing="false" onAction="#lightButtonAction" text="Lights" />
+<ToggleButton fx:id="homeLivingStereo" layoutX="146.0" layoutY="131.0" mnemonicParsing="false" onAction="#stereoButtonAction" text="Stereo" />
+            <ToggleButton fx:id="homeKitchenStereo" layoutX="273.0" layoutY="98.0" mnemonicParsing="false" onAction="#stereoButtonAction" text="Stereo" />
+<Text fx:id="homeFeedback" layoutX="140.0" layoutY="177.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="319.0" />
+         </children></AnchorPane>
+    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+         <children>
+            <Text layoutX="228.0" layoutY="22.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Summer Cottage">
+               <font>
+                  <Font size="19.0" />
+               </font>
+            </Text>
+            <Text layoutX="47.0" layoutY="49.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Entry hallway" />
+            <Text layoutX="197.0" layoutY="49.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Living room" />
+            <Text layoutX="363.0" layoutY="49.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Kitchen" />
+            <Text layoutX="497.0" layoutY="49.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Bedroom" />
+<ToggleButton fx:id="cottageEntryDoor" layoutX="46.0" layoutY="99.0" mnemonicParsing="false" onAction="#doorButtonAction" text="Door Lock" />
+<ToggleButton fx:id="cottageLivingTv" layoutX="213.0" layoutY="99.0" mnemonicParsing="false" onAction="#tvButtonAction" text="TV" />
+            <ToggleButton fx:id="cottageKitchenTv" layoutX="368.0" layoutY="99.0" mnemonicParsing="false" onAction="#tvButtonAction" text="TV" />
+<Text fx:id="cottageFeedback" layoutX="139.0" layoutY="158.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="319.0" />
+            <Button fx:id="logOutButtonDevices" layoutX="277.0" layoutY="173.0" mnemonicParsing="false" onAction="#logOutButtonDevicesAction" text="Log out">
+               <font>
+                  <Font size="9.0" />
+               </font>
+            </Button>
+         </children></AnchorPane>
+  </items>
+</SplitPane>

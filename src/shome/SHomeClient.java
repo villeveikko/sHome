@@ -133,6 +133,14 @@ private String password;
   }
   return false;
  }
+  public boolean doesUserExist(String username) {
+    try {
+      return process.doesUserExist(username);
+    } catch (RemoteException e) {
+      e.printStackTrace();
+    }
+    return false;
+ }
  
  public User getUser(String name, String password) {
      try{

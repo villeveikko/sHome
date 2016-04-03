@@ -7,7 +7,6 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-
 <GridPane alignment="CENTER" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="shome.SceneController">
    <columnConstraints>
       <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
@@ -27,6 +26,11 @@
             <Button fx:id="deleteUserButton" layoutX="257.0" layoutY="175.0" mnemonicParsing="false" text="Delete a User" />
             <Button fx:id="changePasswordButton" layoutX="245.0" layoutY="246.0" mnemonicParsing="false" text="Change Password" />
             <Button fx:id="devicesButton" layoutX="250.0" layoutY="322.0" mnemonicParsing="false" onAction="#devicesButtonAction" text="Control Devices" />
+            <Button fx:id="logOutButton" layoutX="537.0" layoutY="363.0" mnemonicParsing="false" onAction="#logOutButtonAction" text="Log out">
+               <font>
+                  <Font size="10.0" />
+               </font>
+            </Button>
          </children>
       </Pane>
    </children>

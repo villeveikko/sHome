@@ -29,6 +29,10 @@ public class ProcessImplementation implements Process {
  public boolean login(String name, String password) throws RemoteException{
   return server.login(name, password);
  }
+ 
+ public boolean doesUserExist(String username) throws RemoteException {
+     return server.doesUserExist(username);
+ }
 
  public User getUser(String name, String password) throws RemoteException {
      return server.getUser(name, password);

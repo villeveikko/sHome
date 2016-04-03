@@ -11,6 +11,8 @@ import javafx.scene.control.PasswordField;
 import javafx.stage.Stage;
 import javafx.scene.control.Button;
 import javafx.scene.control.RadioButton;
+import javafx.scene.control.ToggleButton;
+import javafx.scene.control.Alert;
 
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
@@ -19,7 +21,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.Socket;
-import javafx.scene.control.ToggleButton;
+import javafx.scene.control.Alert.AlertType;
+
 
 
 
@@ -40,7 +43,7 @@ public class SceneController {
      * LOGIN-SCREEN 
      */
     
-    @FXML private Text actiontarget;
+    @FXML private Text loginTextField;
     @FXML private Button loginbutton;
     @FXML private TextField username;
     @FXML private PasswordField password;
@@ -52,10 +55,12 @@ public class SceneController {
      */
     @FXML protected void loginButtonAction(ActionEvent event) throws IOException { 
         
-        System.out.println("Seuraavat arvot saatiin syötteenä: " + username.getCharacters().toString() + ", " + password.getCharacters().toString());
+        System.out.println("Kirjautumista yritettiin seuraavin tunnuksin: " + username.getCharacters().toString() + ", " + password.getCharacters().toString());
         
         client = new SHomeClient();
         if (client.login(username.getCharacters().toString(), password.getCharacters().toString())) {
+            System.out.println("Käyttäjätunnukset täsmäävät, kirjaudutaan sisään...");
+            
             String view;
             String viewPath;
         try{ 
@@ -63,9 +68,12 @@ public class SceneController {
             view = client.getUser(username.getCharacters().toString(), password.getCharacters().toString()).getView();
             viewPath = "fxml/" + client.getUser(username.getCharacters().toString(), password.getCharacters().toString()).getView();
             
+            System.out.println("Tiedosto: " + viewPath);
+            
             File file = new File("src\\shome\\fxml\\" + view);
 
             if (!file.exists()) {
+               System.out.println("Tiedostoa ei löydy laitteesta, haetaan palvelimelta...");
                receiveFile(view);
             }
       
@@ -79,13 +87,15 @@ public class SceneController {
             stage.setTitle("sHome - Welcome");
             stage.setScene(scene);
             stage.show();
+            
+            System.out.println("Kirjautuminen onnistui!");
         } catch (IOException e) {
             e.printStackTrace();
         }
           
         }
         else {
-            actiontarget.setText("Username or password incorrect.");
+            loginTextField.setText("Username or password incorrect.");
         }
     }
     
@@ -98,31 +108,45 @@ public class SceneController {
     @FXML private Button deleteUserButton;
     @FXML private Button changePasswordButton;
     @FXML private Button devicesButton;
+    @FXML private Button logOutButton;
     
     @FXML protected void devicesButtonAction(ActionEvent event) throws Exception {
         Stage stage;
-            Parent root = FXMLLoader.load(getClass().getResource("fxml/AdminDevices.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("fxml/AdminDevices.fxml"));
         
-            stage=(Stage) devicesButton.getScene().getWindow();
+        stage=(Stage) devicesButton.getScene().getWindow();
         
-            Scene scene = new Scene(root, 600, 550);
+        Scene scene = new Scene(root, 600, 550);
         
-            stage.setTitle("sHome - Control Devices");
-            stage.setScene(scene);
-            stage.show();
+        stage.setTitle("sHome - Control Devices");            
+        stage.setScene(scene);    
+        stage.show();
     }
     
     @FXML protected void createUserButtonAction(ActionEvent event) throws Exception {
         Stage stage;
-            Parent root = FXMLLoader.load(getClass().getResource("fxml/CreateUserView.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("fxml/CreateUserView.fxml"));
+            
+        stage=(Stage) createUserButton.getScene().getWindow();
         
-            stage=(Stage) createUserButton.getScene().getWindow();
+        Scene scene = new Scene(root, 600, 550);
         
-            Scene scene = new Scene(root, 600, 550);
+        stage.setTitle("sHome - Create a User");
+        stage.setScene(scene);
+        stage.show();
+    }
+    
+    @FXML protected void logOutButtonAction (ActionEvent event) throws Exception {
+        Stage stage;
+        Parent root = FXMLLoader.load(getClass().getResource("fxml/Login.fxml"));
         
-            stage.setTitle("sHome - Create a User");
-            stage.setScene(scene);
-            stage.show();
+        stage=(Stage) logOutButton.getScene().getWindow();
+        
+        Scene scene = new Scene(root, 300, 275);
+        
+        stage.setTitle("sHome login");
+        stage.setScene(scene);
+        stage.show();
     }
     
     
@@ -147,10 +171,35 @@ public class SceneController {
     @FXML private RadioButton cottageHumidity;
     
     @FXML private Button createNewUser;
+    @FXML private Button goBackUser;
     
     @FXML protected void createNewUserButtonAction(ActionEvent event) throws Exception {
         
+        String newUsernameString = newUsername.getCharacters().toString();
+        String newPasswordString = newPassword.getCharacters().toString();
+        
+        newUsernameString = newUsernameString.replaceAll(" ", "");
+        
         client = new SHomeClient();
+        
+        if (newUsernameString.isEmpty()) {
+            Alert alert = new Alert(AlertType.ERROR);
+            alert.setTitle("");
+            alert.setHeaderText(null);
+            alert.setContentText("You can't leave the username field empty!");
+            alert.showAndWait();
+            return;
+        }
+        
+        if(client.doesUserExist(newUsernameString)) {  
+            Alert alert = new Alert(AlertType.ERROR);
+            alert.setTitle("");
+            alert.setHeaderText(null);
+            alert.setContentText("A user with the same username already exists!");
+            alert.showAndWait();
+            return;
+        }
+        
         
         Boolean[] truthTable;
         truthTable = new Boolean[12];
@@ -169,7 +218,52 @@ public class SceneController {
         
         String content = buildFxml(truthTable);
         
-        client.createUser(newUsername.getCharacters().toString(), newPassword.getCharacters().toString(), content);
+        client.createUser(newUsernameString, newPasswordString, content);
+                
+        if(client.doesUserExist(newUsernameString)) {
+            newUsername.clear();
+            newPassword.clear();
+            
+            homeLights.setSelected(false);
+            homeDoors.setSelected(false);
+            homeTv.setSelected(false);
+            homeStereo.setSelected(false);
+            homeHeat.setSelected(false);
+            homeHumidity.setSelected(false);
+            cottageLights.setSelected(false);
+            cottageDoors.setSelected(false);
+            cottageTv.setSelected(false);
+            cottageStereo.setSelected(false);
+            cottageHeat.setSelected(false);
+            cottageHumidity.setSelected(false);
+            
+            Alert alert = new Alert(AlertType.INFORMATION);
+            alert.setTitle("");
+            alert.setHeaderText(null);
+            alert.setContentText("Creating the user was successful!");
+            alert.showAndWait();
+        }
+        else {
+            Alert alert = new Alert(AlertType.ERROR);
+            alert.setTitle("");
+            alert.setHeaderText(null);
+            alert.setContentText("Something went wrong, and the user couldn't be created!");
+            alert.showAndWait();
+        }
+        
+    }
+    
+    @FXML protected void goBackUserButtonAction(ActionEvent event) throws Exception {
+        Stage stage;
+        Parent root = FXMLLoader.load(getClass().getResource("fxml/AdminView.fxml"));
+        
+        stage=(Stage) goBackUser.getScene().getWindow();
+        
+        Scene scene = new Scene(root, 600, 550);
+        
+        stage.setTitle("sHome - Welcome");            
+        stage.setScene(scene);    
+        stage.show();
     }
     
     /**
@@ -199,27 +293,168 @@ public class SceneController {
     @FXML private Button homeSetHumidity;
     @FXML private Button cottageSetTemperature;
     @FXML private Button cottageSetHumidity;
+    @FXML private Button logOutButtonDevices;
+    @FXML private Button goBackDevices;
     
     @FXML Text homeFeedback;
     @FXML Text cottageFeedback;
     
-    @FXML protected void lightButtonAction(ActionEvent event) throws Exception {
+    @FXML protected void light1ButtonAction(ActionEvent event) throws Exception {
 
         try{
             client = new SHomeClient();
         } catch (Exception e) {
             e.printStackTrace();
         }
-         
-        
         
         client.lightSwitch("light1");
         if (client.getLightState("light1")){
-            System.out.println("Wow! The light is now ON!");
+            System.out.println("Wow! The hallway lights are now ON!");
+            homeFeedback.setText("The hallway lights are now ON!");
         } else {
-            System.out.println("Wow! The light is now OFF!");
+            System.out.println("Wow! The hallway lights are now OFF!");
+            homeFeedback.setText("The hallway lights are now OFF!");
         }    
     }
+    @FXML protected void light2ButtonAction(ActionEvent event) throws Exception {
+
+        try{
+            client = new SHomeClient();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
+        client.lightSwitch("light2");
+        if (client.getLightState("light2")){
+            System.out.println("Wow! The living room lights are now ON!");
+            homeFeedback.setText("The living room lights are now ON!");
+        } else {
+            System.out.println("Wow! The living room lights are now OFF!");
+            homeFeedback.setText("The living room lights are now OFF!");
+        }    
+    }
+    @FXML protected void light3ButtonAction(ActionEvent event) throws Exception {
+
+        try{
+            client = new SHomeClient();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
+        client.lightSwitch("light3");
+        if (client.getLightState("light3")){
+            System.out.println("Wow! The kitchen lights are now ON!");
+            homeFeedback.setText("The kitchen lights are now ON!");
+        } else {
+            System.out.println("Wow! The kitchen lights are now OFF!");
+            homeFeedback.setText("The kitchen lights are now OFF!");
+        }    
+    }
+    @FXML protected void light4ButtonAction(ActionEvent event) throws Exception {
+
+        try{
+            client = new SHomeClient();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
+        client.lightSwitch("light4");
+        if (client.getLightState("light4")){
+            System.out.println("Wow! The bedroom lights are now ON!");
+            homeFeedback.setText("The bedroom lights are now ON!");
+        } else {
+            System.out.println("Wow! The bedroom lights are now OFF!");
+            homeFeedback.setText("The bedroom lights are now OFF!");
+        }    
+    }
+    @FXML protected void light5ButtonAction(ActionEvent event) throws Exception {
+
+        try{
+            client = new SHomeClient();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
+        client.lightSwitch("light5");
+        if (client.getLightState("light5")){
+            System.out.println("Wow! The garage lights are now ON!");
+            homeFeedback.setText("The garage lights are now ON!");
+        } else {
+            System.out.println("Wow! The garage lights are now OFF!");
+            homeFeedback.setText("The garage lights are now OFF!");
+        }    
+    }
+    
+    @FXML protected void light6ButtonAction(ActionEvent event) throws Exception {
+
+        try{
+            client = new SHomeClient();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
+        client.lightSwitch("light6");
+        if (client.getLightState("light6")){
+            System.out.println("Wow! The hallway lights are now ON!");
+            cottageFeedback.setText("The hallway lights are now ON!");
+        } else {
+            System.out.println("Wow! The hallway lights are now OFF!");
+            cottageFeedback.setText("The hallway lights are now OFF!");
+        }    
+    }
+    @FXML protected void light7ButtonAction(ActionEvent event) throws Exception {
+
+        try{
+            client = new SHomeClient();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
+        client.lightSwitch("light7");
+        if (client.getLightState("light7")){
+            System.out.println("Wow! The living room lights are now ON!");
+            cottageFeedback.setText("The living room lights are now ON!");
+        } else {
+            System.out.println("Wow! The living room lights are now OFF!");
+            cottageFeedback.setText("The living room lights are now OFF!");
+        }    
+    }
+    @FXML protected void light8ButtonAction(ActionEvent event) throws Exception {
+
+        try{
+            client = new SHomeClient();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
+        client.lightSwitch("light8");
+        if (client.getLightState("light8")){
+            System.out.println("Wow! The kitchen lights are now ON!");
+            cottageFeedback.setText("The kitchen lights are now ON!");
+        } else {
+            System.out.println("Wow! The kitchen lights are now OFF!");
+            cottageFeedback.setText("The kitchen lights are now OFF!");
+        }    
+    }
+    @FXML protected void light9ButtonAction(ActionEvent event) throws Exception {
+
+        try{
+            client = new SHomeClient();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
+        client.lightSwitch("light9");
+        if (client.getLightState("light9")){
+            System.out.println("Wow! The bedroom lights are now ON!");
+            cottageFeedback.setText("The bedroom lights are now ON!");
+        } else {
+            System.out.println("Wow! The bedroom lights are now OFF!");
+            cottageFeedback.setText("The bedroom lights are now OFF!");
+        }    
+    }
+    
+    
     
     @FXML protected void doorButtonAction(ActionEvent event) throws Exception {
         try{
@@ -252,6 +487,32 @@ public class SceneController {
     
     @FXML protected void humidityButtonAction(ActionEvent event) throws Exception {
         //TODO
+    }
+    
+    @FXML protected void logOutButtonDevicesAction(ActionEvent event) throws Exception {
+        Stage stage;
+        Parent root = FXMLLoader.load(getClass().getResource("fxml/Login.fxml"));
+        
+        stage=(Stage) logOutButtonDevices.getScene().getWindow();
+        
+        Scene scene = new Scene(root, 300, 275);
+        
+        stage.setTitle("sHome login");
+        stage.setScene(scene);
+        stage.show();
+    }
+    
+    @FXML protected void goBackDevicesButtonAction(ActionEvent event) throws Exception {
+        Stage stage;
+        Parent root = FXMLLoader.load(getClass().getResource("fxml/AdminView.fxml"));
+        
+        stage=(Stage) goBackDevices.getScene().getWindow();
+        
+        Scene scene = new Scene(root, 600, 550);
+        
+        stage.setTitle("sHome - Welcome");            
+        stage.setScene(scene);    
+        stage.show();
     }
     
     /**
@@ -348,11 +609,11 @@ public class SceneController {
 "            <Text layoutX=\"402.0\" layoutY=\"50.0\" strokeType=\"OUTSIDE\" strokeWidth=\"0.0\" text=\"Bedroom\" />\n" +
 "            <Text layoutX=\"528.0\" layoutY=\"50.0\" strokeType=\"OUTSIDE\" strokeWidth=\"0.0\" text=\"Garage\" />\n";
         
-        String homeLights = "<ToggleButton fx:id=\"homeEntryLights\" layoutX=\"25.0\" layoutY=\"65.0\" mnemonicParsing=\"false\" onAction=\"#lightButtonAction\" text=\"Lights\" />\n" +
-"            <ToggleButton fx:id=\"homeLivingLights\" layoutX=\"147.0\" layoutY=\"65.0\" mnemonicParsing=\"false\" onAction=\"#lightButtonAction\" text=\"Lights\" />\n" +
-"            <ToggleButton fx:id=\"homeKitchenLights\" layoutX=\"275.0\" layoutY=\"65.0\" mnemonicParsing=\"false\" onAction=\"#lightButtonAction\" text=\"Lights\" />\n" +
-"            <ToggleButton fx:id=\"homeBedroomLights\" layoutX=\"402.0\" layoutY=\"65.0\" mnemonicParsing=\"false\" onAction=\"#lightButtonAction\" text=\"Lights\" />\n" +
-"            <ToggleButton fx:id=\"homeGarageLights\" layoutX=\"523.0\" layoutY=\"65.0\" mnemonicParsing=\"false\" onAction=\"#lightButtonAction\" text=\"Lights\" />\n";
+        String homeLights = "<ToggleButton fx:id=\"homeEntryLights\" layoutX=\"25.0\" layoutY=\"65.0\" mnemonicParsing=\"false\" onAction=\"#light1ButtonAction\" text=\"Lights\" />\n" +
+"            <ToggleButton fx:id=\"homeLivingLights\" layoutX=\"147.0\" layoutY=\"65.0\" mnemonicParsing=\"false\" onAction=\"#light2ButtonAction\" text=\"Lights\" />\n" +
+"            <ToggleButton fx:id=\"homeKitchenLights\" layoutX=\"275.0\" layoutY=\"65.0\" mnemonicParsing=\"false\" onAction=\"#light3ButtonAction\" text=\"Lights\" />\n" +
+"            <ToggleButton fx:id=\"homeBedroomLights\" layoutX=\"402.0\" layoutY=\"65.0\" mnemonicParsing=\"false\" onAction=\"#light4ButtonAction\" text=\"Lights\" />\n" +
+"            <ToggleButton fx:id=\"homeGarageLights\" layoutX=\"523.0\" layoutY=\"65.0\" mnemonicParsing=\"false\" onAction=\"#light5ButtonAction\" text=\"Lights\" />\n";
         
         String homeDoors = "<ToggleButton fx:id=\"homeEntryDoor\" layoutX=\"14.0\" layoutY=\"98.0\" mnemonicParsing=\"false\" onAction=\"#doorButtonAction\" text=\"Door Lock\" />\n" +
 "            <ToggleButton fx:id=\"homeGarageDoor\" layoutX=\"511.0\" layoutY=\"98.0\" mnemonicParsing=\"false\" onAction=\"#doorButtonAction\" text=\"Door Lock\" />\n";
@@ -374,7 +635,7 @@ public class SceneController {
 "               </font>\n" +
 "            </Button>\n";
         
-        String cottage = "<Text id=\"homeFeedback\" layoutX=\"140.0\" layoutY=\"177.0\" strokeType=\"OUTSIDE\" strokeWidth=\"0.0\" wrappingWidth=\"319.0\" />\n" +
+        String cottage = "<Text fx:id=\"homeFeedback\" layoutX=\"140.0\" layoutY=\"177.0\" strokeType=\"OUTSIDE\" strokeWidth=\"0.0\" wrappingWidth=\"319.0\" />\n" +
 "         </children></AnchorPane>\n" +
 "    <AnchorPane minHeight=\"0.0\" minWidth=\"0.0\" prefHeight=\"100.0\" prefWidth=\"160.0\">\n" +
 "         <children>\n" +
@@ -388,10 +649,10 @@ public class SceneController {
 "            <Text layoutX=\"363.0\" layoutY=\"49.0\" strokeType=\"OUTSIDE\" strokeWidth=\"0.0\" text=\"Kitchen\" />\n" +
 "            <Text layoutX=\"497.0\" layoutY=\"49.0\" strokeType=\"OUTSIDE\" strokeWidth=\"0.0\" text=\"Bedroom\" />\n";
         
-        String cottageLights = "<ToggleButton fx:id=\"cottageEntryLights\" layoutX=\"58.0\" layoutY=\"66.0\" mnemonicParsing=\"false\" onAction=\"#lightButtonAction\" text=\"Lights\" />\n" +
-"            <ToggleButton fx:id=\"cottageLivingLights\" layoutX=\"204.0\" layoutY=\"66.0\" mnemonicParsing=\"false\" onAction=\"#lightButtonAction\" text=\"Lights\" />\n" +
-"            <ToggleButton fx:id=\"cottageKitchenLights\" layoutX=\"359.0\" layoutY=\"66.0\" mnemonicParsing=\"false\" onAction=\"#lightButtonAction\" text=\"Lights\" />\n" +
-"            <ToggleButton fx:id=\"cottageBedroomLights\" layoutX=\"497.0\" layoutY=\"66.0\" mnemonicParsing=\"false\" onAction=\"#lightButtonAction\" text=\"Lights\" />\n";
+        String cottageLights = "<ToggleButton fx:id=\"cottageEntryLights\" layoutX=\"58.0\" layoutY=\"66.0\" mnemonicParsing=\"false\" onAction=\"#light6ButtonAction\" text=\"Lights\" />\n" +
+"            <ToggleButton fx:id=\"cottageLivingLights\" layoutX=\"204.0\" layoutY=\"66.0\" mnemonicParsing=\"false\" onAction=\"#light7ButtonAction\" text=\"Lights\" />\n" +
+"            <ToggleButton fx:id=\"cottageKitchenLights\" layoutX=\"359.0\" layoutY=\"66.0\" mnemonicParsing=\"false\" onAction=\"#light8ButtonAction\" text=\"Lights\" />\n" +
+"            <ToggleButton fx:id=\"cottageBedroomLights\" layoutX=\"497.0\" layoutY=\"66.0\" mnemonicParsing=\"false\" onAction=\"#light9ButtonAction\" text=\"Lights\" />\n";
         
         String cottageDoors = "<ToggleButton fx:id=\"cottageEntryDoor\" layoutX=\"46.0\" layoutY=\"99.0\" mnemonicParsing=\"false\" onAction=\"#doorButtonAction\" text=\"Door Lock\" />\n";
         
@@ -412,7 +673,12 @@ public class SceneController {
 "               </font>\n" +
 "            </Button>\n";
         
-        String end ="<Text id=\"cottageFeedback\" layoutX=\"139.0\" layoutY=\"169.0\" strokeType=\"OUTSIDE\" strokeWidth=\"0.0\" wrappingWidth=\"319.0\" />\n" +
+        String end ="<Text fx:id=\"cottageFeedback\" layoutX=\"139.0\" layoutY=\"158.0\" strokeType=\"OUTSIDE\" strokeWidth=\"0.0\" wrappingWidth=\"319.0\" />\n" +
+"            <Button fx:id=\"logOutButtonDevices\" layoutX=\"277.0\" layoutY=\"173.0\" mnemonicParsing=\"false\" onAction=\"#logOutButtonDevicesAction\" text=\"Log out\">\n" +
+"               <font>\n" +
+"                  <Font size=\"9.0\" />\n" +
+"               </font>\n" +
+"            </Button>\n" +
 "         </children></AnchorPane>\n" +
 "  </items>\n" +
 "</SplitPane>\n";
