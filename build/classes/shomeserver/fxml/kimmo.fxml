@@ -24,14 +24,11 @@
                   <Font size="9.0" />
                </font>
             </Button>
-<ToggleButton fx:id="homeEntryLights" layoutX="25.0" layoutY="65.0" mnemonicParsing="false" onAction="#light1ButtonAction" text="Lights" />
-            <ToggleButton fx:id="homeLivingLights" layoutX="147.0" layoutY="65.0" mnemonicParsing="false" onAction="#light2ButtonAction" text="Lights" />
-            <ToggleButton fx:id="homeKitchenLights" layoutX="275.0" layoutY="65.0" mnemonicParsing="false" onAction="#light3ButtonAction" text="Lights" />
-            <ToggleButton fx:id="homeBedroomLights" layoutX="402.0" layoutY="65.0" mnemonicParsing="false" onAction="#light4ButtonAction" text="Lights" />
-            <ToggleButton fx:id="homeGarageLights" layoutX="523.0" layoutY="65.0" mnemonicParsing="false" onAction="#light5ButtonAction" text="Lights" />
 <ToggleButton fx:id="homeEntryDoor" layoutX="14.0" layoutY="98.0" mnemonicParsing="false" onAction="#door1ButtonAction" text="Door Lock" />
             <ToggleButton fx:id="homeGarageDoor" layoutX="511.0" layoutY="98.0" mnemonicParsing="false" onAction="#door2ButtonAction" text="Door Lock" />
 <ToggleButton fx:id="homeLivingTv" layoutX="156.0" layoutY="98.0" mnemonicParsing="false" onAction="#tv1ButtonAction" text="TV" />
+<ToggleButton fx:id="homeLivingStereo" layoutX="146.0" layoutY="131.0" mnemonicParsing="false" onAction="#stereo1ButtonAction" text="Stereo" />
+            <ToggleButton fx:id="homeKitchenStereo" layoutX="273.0" layoutY="98.0" mnemonicParsing="false" onAction="#stereo2ButtonAction" text="Stereo" />
 <Text fx:id="homeFeedback" layoutX="140.0" layoutY="177.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="319.0" />
          </children></AnchorPane>
     <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">

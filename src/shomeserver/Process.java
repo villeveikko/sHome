@@ -6,8 +6,9 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 
-/*
- * EtÃ¤olion rajapinta
+/**
+ * Etäolion rajapinta
+ * @author Villeveikko
  */
 public interface Process extends Remote{
  
@@ -20,7 +21,6 @@ public interface Process extends Remote{
  public void deleteUser(User user) throws RemoteException, IOException;
  public void changeUserPassword(User user, String password) throws RemoteException, IOException;
  public boolean writeFxml(String content, String username) throws RemoteException;
- public boolean sendFile(String filename) throws RemoteException, IOException;
  public void startSendFile(String filename) throws RemoteException, IOException;
  public boolean lightSwitch(String lightName) throws RemoteException;  
 public boolean getLightState(String light) throws RemoteException;

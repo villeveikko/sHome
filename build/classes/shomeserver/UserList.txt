@@ -1,3 +1,4 @@
 <admin password AdminView.fxml>
+<katja kala katja.fxml>
 <kimmo  kimmo.fxml>
-<katja kili katja.fxml>
+<testi  testi.fxml>

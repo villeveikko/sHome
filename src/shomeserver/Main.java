@@ -4,8 +4,17 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 
+/**
+ * Palvelinpuolen pääluokka ohjelmassa. 
+ * @author Villeveikko
+ */
+
 public class Main {
 
+    /**
+     * Alustaa palvelimen.
+     * @param args ei käytetä
+     */
     public static void main(String[] args) {
          //if (System.getSecurityManager() == null)  System.setSecurityManager(new SecurityManager());
            try {

@@ -4,7 +4,8 @@ package shomeserver;
 import java.io.Serializable;
 
 /**
- *
+ * Luokka stereo-laitteille älykodissa.
+ * @author Villeveikko
  */
 public class Stereo extends Thread implements Serializable {
     
@@ -26,9 +27,12 @@ public class Stereo extends Thread implements Serializable {
         this.state = state;
     }
     
+    /**
+     * Mahdollinen run-metodi laitteen käynnistämiseksi, jos sellainen olisi olemassa.
+     */
     @Override
     public void run() {
-        System.out.println("TV state switched!");
+        System.out.println("Stereo state switched!");
     }
 
 }

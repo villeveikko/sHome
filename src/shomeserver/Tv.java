@@ -4,7 +4,8 @@ package shomeserver;
 import java.io.Serializable;
 
 /**
- *
+ * Luokka TV-laitteille älykodissa.
+ * @author Villeveikko
  */
 public class Tv extends Thread implements Serializable {
     
@@ -26,6 +27,9 @@ public class Tv extends Thread implements Serializable {
         this.state = state;
     }
     
+    /**
+     * Mahdollinen run-metodi laitteen käynnistämiseksi, jos sellainen olisi olemassa.
+     */
     @Override
     public void run() {
         System.out.println("TV state switched!");

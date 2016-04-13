@@ -12,8 +12,6 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.Charset;
@@ -22,18 +20,16 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 
-/*
- * Prosessin ydin
+/**
+ * Prosessin ydin. Sisältää tiedot kaikista käyttäjistä ja älykodin laitteista.
+ * @author Villeveikko
  */
 public class ProcessServer   {
      
-  public final static int SOCKET_PORT = 13267;  // you may change this
- //  public final static String FILE_TO_SEND = "fxml/testi.fxml";  // you may change this
-    
-    
+  public final static int SOCKET_PORT = 13267;  
+
  private User admin;
  private ArrayList<User> users;
   
@@ -63,10 +59,12 @@ public class ProcessServer   {
   final static String FILE_NAME = "shomeserver\\UserList.txt";
   final static Charset ENCODING = StandardCharsets.UTF_8;
  
+  /**
+   * Konstruktori alustaa serverin kaikkine laitteineen.
+   */
  public ProcessServer() {
   super();
-  /*admin = new User("admin", "password");
-  admin.setView("AdminView.fxml");*/
+
   users = new ArrayList<User>();
   interpretUserList();
   
@@ -93,12 +91,15 @@ public class ProcessServer   {
   humi1 = new HumidityController();
   humi2 = new HumidityController();
   
-  
-
   System.out.println("Server started");
  }
  
- 
+ /**
+  * Tarkistaa users-ArrayList:stä, onko annettua käyttäjänimi-salasanayhdistelmää olemassa.
+  * @param name saatu käyttäjänimi
+  * @param password saatu salasana
+  * @return true = käyttäjä olemassa ; false = käyttäjä ei ole olemassa
+  */
  public boolean login(String name, String password) {
      for (int i = 0; i < users.size(); i++) {
         if (users.get(i).getUsername().equals(name) && users.get(i).getPassword().equals(password)) {
@@ -110,6 +111,11 @@ public class ProcessServer   {
      System.out.println("ERROR: Wrong username or password!");
      return false;
   }
+ /**
+  * Tarkistaa users-ArrayList:stä, onko annettua käyttäjänimeä olemassa.
+  * @param username saatu käyttäjänimi
+  * @return true = käyttäjänimi olemassa ; false = käyttäjänimi ei ole olemassa
+  */
   public boolean doesUserExist(String username) {
      for (int i = 0; i < users.size(); i++) {
         if (users.get(i).getUsername().equals(username)) {
@@ -122,6 +128,11 @@ public class ProcessServer   {
      return false;
   }
  
+  /**
+   * Hakee User-luokan instanssin users-ArrayList:stä annetun käyttäjänimen perusteella.
+   * @param name saatu käyttäjänimi
+   * @return löydetty User-luokan instanssi
+   */
  public User getUser(String name) {
 
      for (int i = 0; i < users.size(); i++) {
@@ -131,6 +142,10 @@ public class ProcessServer   {
      }
     return users.get(0);
  }
+ /**
+  * Tekee uuden String-pohjaisen ArrayListin kaikkien palvelimella olevien käyttäjien käyttäjänimistä.
+  * @return luotu ArrayList
+  */
  public ArrayList<String> getUsers() {
      ArrayList<String> lista = new ArrayList();
      for (int i = 0; i < users.size(); i++) {
@@ -139,6 +154,13 @@ public class ProcessServer   {
      return lista;
  }
  
+ /**
+  * Luo palvelimelle uuden käyttäjän. Tiedot uudesta käyttäjästä kirjoitetaan UserList.txt-tiedostoon.
+  * Käyttäjälle luodaan myös oma FXML-näkymä.
+  * @param username uudelle käyttäjälle asetettava käyttäjänimi
+  * @param password uudelle käyttäjälle asetettava salasana
+  * @param content uudelle käyttäjälle asetettava näkymä String-muodossa
+  */
  public void createUser(String username, String password, String content)  {
     
      try{
@@ -149,25 +171,42 @@ User asd = new User(username, password);
      updateUserList(asd);
  } catch (IOException e) {}
  }
+ /**
+  * Poistaa annetun käyttäjän palvelimelta.
+  * @param user saatu User-instanssin käyttäjä
+  */
  public void deleteUser(User user) {
      removeUserList(user);
      users.remove(user);
      interpretUserList();
  }
+ /**
+  * Vaihtaa olemassaolevan käyttäjän salasanan.
+  * Metodi oikeastaan luo käyttäjän uudelleen päivitetyillä tiedoilla, ja sitten poistaa vanhentuneen version.
+  * @param user saatu User-instanssin käyttäjä, jonka salasanaa muutetaan
+  * @param password uusi salasana
+  */
  public void changeUserPassword(User user, String password) {
      try {
-         User u = new User(user.getUsername(), password, user.getView());
+         String username = user.getUsername();
+         String view = user.getView();
+         
+         interpretUserList();
+         
+         removeUserList(user);
+         User u = new User(username, password, view);
          users.add(u);
          updateUserList(u);
-         removeUserList(user);
          interpretUserList();
      } catch (IOException e) {}
      
  }
  
  
- /*
-  * 
+ /**
+  * Pistää valon päälle tai pois päältä!
+  * @param lightName valon nimi
+  * @return true = valo on nyt päällä ; false = valo on nyt pois päältä
   */
  public boolean lightSwitch(String lightName) {
      switch(lightName) {
@@ -255,6 +294,11 @@ User asd = new User(username, password);
      }
      return false;
  }
+ /**
+  * Palauttaa tiedon, onko valo päällä vai pois päältä.
+  * @param light valon nimi
+  * @return true = valo on päällä ; false = valo on pois päältä
+  */
  public boolean getLightState(String light) {
      switch(light) {
          case "light1": return light1.isState();
@@ -270,6 +314,11 @@ User asd = new User(username, password);
      return false;
  }
  
+ /**
+  * Pistää oven lukkoon tai avaa oven lukosta!
+  * @param door oven nimi
+  * @return true = ovi on nyt lukossa ; false = ovi on nyt auki
+  */
  public boolean doorLockSwitch(String door) {
      switch(door) {
          case "door1":
@@ -302,6 +351,11 @@ User asd = new User(username, password);
      }
      return false;
  }
+ /**
+  * Palauttaa tiedon, onko ovi lukossa vai auki.
+  * @param door oven nimi
+  * @return true = ovi on lukossa ; false = ovi on auki
+  */
  public boolean getDoorState(String door) {
      switch(door) {
          case "door1": return door1.isState();
@@ -311,6 +365,11 @@ User asd = new User(username, password);
      return false;
  }
  
+ /**
+  * Pistää TV:n joko auki tai kiinni!
+  * @param tv TV:n nimi
+  * @return true = TV on nyt auki ; false = TV on nyt kiinni
+  */
  public boolean tvSwitch(String tv) {
      switch(tv) {
          case "tv1":
@@ -343,6 +402,11 @@ User asd = new User(username, password);
      }
      return false;
  }
+ /**
+  * Palauttaa tiedon, onko TV auki vai kiinni.
+  * @param tv TV:n nimi
+  * @return true = TV on auki ; false = TV on kiinni
+  */
  public boolean getTvState(String tv) {
      switch(tv) {
          case "tv1": return tv1.isState();
@@ -352,6 +416,11 @@ User asd = new User(username, password);
      return false;
  }
  
+ /**
+  * Pistää stereon joko auki tai kiinni!
+  * @param stereo TV:n nimi
+  * @return true = stereo on nyt auki ; false = stereo on nyt kiinni
+  */
  public boolean stereoSwitch(String stereo) {
      switch(stereo) {
          case "stereo1":
@@ -384,6 +453,11 @@ User asd = new User(username, password);
      }
      return false;
  }
+ /**
+  * Palauttaa tiedon, onko stereo auki vai kiinni.
+  * @param stereo stereon nimi
+  * @return true = stereo on auki ; false = stereo on kiinni
+  */
  public boolean getStereoState(String stereo) {
      switch(stereo) {
          case "stereo1": return stereo1.isState();
@@ -423,7 +497,12 @@ User asd = new User(username, password);
  
  
  
- 
+ /**
+  * Kirjoittaa FXML-tyyppisen tiedoston palvelimelle, ja nimeää sen käyttäjänimen perusteella. 
+  * @param content sisältö, joka kirjoitetaan tiedostoon
+  * @param username käyttäjänimi, jonka mukaan tiedosto nimetään
+  * @return true = kirjoitus onnistui ; false = kirjoitus epäonnistui
+  */
  public boolean writeFxml(String content, String username) {
      
     try {
@@ -439,12 +518,10 @@ User asd = new User(username, password);
     bw.write(content);
     bw.close();
 
+    System.out.println("New view for the user " + username + " done.");
     
+    } catch (IOException e) {}
     
-    
-    } catch (IOException e) {
-        e.printStackTrace();
-    }
     try {
     
     File file = new File("shome\fxml\\" + username + ".fxml");
@@ -462,19 +539,28 @@ User asd = new User(username, password);
     
     return true;
     
-    } catch (IOException e) {
-        e.printStackTrace();
-    }
+    } catch (IOException e) {}
     
     return false;
      
  }
  
+ /**
+  * Lukee UserList.txt-tiedoston ja palauttaa sen jokaisen rivin List-oliossa.
+  * @return
+  * @throws IOException 
+  */
  public List<String> readUserList() throws IOException {
      Path path = Paths.get(FILE_NAME);
      return Files.readAllLines(path, ENCODING);
  }
  
+ /**
+  * Päivittää UserList.txt-tiedoston lisämällä siihen uuden käyttäjän. 
+  * Käyttäjät kirjoitetaan <käyttäjänimi salasana fxmlTiedostoNimi> -muodossa
+  * @param user tiedostoon lisättävä käyttäjä
+  * @throws IOException 
+  */
  public void updateUserList(User user) throws IOException {
      List<String> aLines = readUserList();
      aLines.add("<" + user.getUsername() + " " + user.getPassword() + " " + user.getView() + ">");
@@ -482,6 +568,10 @@ User asd = new User(username, password);
      Path path = Paths.get(FILE_NAME);
      Files.write(path, aLines, ENCODING);
  }
+ 
+ /**
+  * Lukee UserList.txt-tiedoston, ja lisää sieltä löytyvät käyttäjät users-ArrayListiin.
+  */
  public void interpretUserList()  {
      users.clear();
      try { 
@@ -490,27 +580,25 @@ User asd = new User(username, password);
          System.out.println(temp);
          
          String username = temp.substring(1, temp.indexOf(" "));
-         //System.out.println(username);
          temp = temp.substring(temp.indexOf(" ") + 1);
-         //System.out.println(temp);
          
          String password = temp.substring(0, temp.indexOf(" "));
-         //System.out.println(password);
          temp = temp.substring(temp.indexOf(" ") + 1);
-         //System.out.println(temp);
          
          String view = temp.substring(0, temp.indexOf(">"));
-         //System.out.println(view);
          
          User user = new User(username, password, view);
          users.add(user);
          
      }
      } catch (IOException e) {
-         System.out.println(FILE_NAME);
        System.out.println("Jokin väärin tiedostopolussa!"); 
      }
  }
+ /**
+  * Poistaa annetun käyttäjän UserList.txt-tiedostosta.
+  * @param user poistettava käyttäjä
+  */
  public void removeUserList(User user) {
      try {
      List<String> aLines = readUserList(); 
@@ -530,6 +618,11 @@ User asd = new User(username, password);
      }
  }
  
+ /**
+  * Käynnistää uuden säikeen sendFile-metodille.
+  * @param filename lähetettävän tiedoston nimi
+  * @throws IOException 
+  */
  public void startSendFile(String filename) throws IOException {
   Thread t = new Thread(){
    public void run(){
@@ -543,6 +636,12 @@ User asd = new User(username, password);
     t.start();
  }
  
+ /**
+  * Yrittää lähettää tiedoston asiakassovellukselle.
+  * @param filename pyydetyn tiedoston nimi
+  * @return true = lähetys onnistui ; false = lähetys epäonnistui
+  * @throws IOException 
+  */
  public boolean sendFile(String filename) throws IOException {
      System.out.println("Saatiin pyyntö lähettää tiedosto " + filename);
      

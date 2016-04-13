@@ -5,8 +5,9 @@ import java.rmi.RemoteException;
 import java.io.IOException;
 import java.util.ArrayList;
 
-/*
- * EtÃ¤olion toteutus
+/**
+ * Etäolion toteutus
+ * @author Villeveikko
  */
 public class ProcessImplementation implements Process {
 
@@ -22,9 +23,9 @@ public class ProcessImplementation implements Process {
  }
  
 
- 
- 
- 
+ /**
+  * KÄYTTÄJÄMETODEJA
+  */
  public boolean login(String name, String password) throws RemoteException{
   return server.login(name, password);
  }
@@ -101,10 +102,6 @@ public class ProcessImplementation implements Process {
   */
  public boolean writeFxml(String content, String username) throws RemoteException {
      return server.writeFxml(content, username);
- }
- 
- public boolean sendFile(String filename) throws RemoteException, IOException {
-     return server.sendFile(filename);
  }
  
  public void startSendFile(String filename) throws RemoteException, IOException {

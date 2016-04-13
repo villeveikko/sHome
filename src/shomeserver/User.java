@@ -5,8 +5,8 @@ import java.io.Serializable;
 import java.util.Iterator;
 
 /**
- *
- * @author 
+ * Käyttäjä-luokka. Käytetään lähinnä kirjautumisen yhteydessä.
+ * @author Villeveikko
  */
 public class User implements Serializable {
     private String username;

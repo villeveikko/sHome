@@ -35,7 +35,7 @@ import javafx.scene.control.Slider;
  
 /**
  * SceneController-luokka hallitsee ohjelman käyttöliittymänäkymien siirtymistä sekä käyttöliittymäkomponenttien toimintaa.
- * Luokka on varsin iso. Nappuloille tarkoitetut metodit ollaan lajiteltu näkymittäin.
+ * Luokka on varsin iso. Käyttöliittymäkomponentit ja niille tarkoitetut metodit ollaan lajiteltu näkymittäin.
  * @author Villeveikko
  */
 public class SceneController {
@@ -123,6 +123,11 @@ public class SceneController {
     @FXML private Button devicesButton;
     @FXML private Button logOutButton;
     
+    /**
+     * Siirtää käyttäjän näkymään, jossa tämä voi hallita älykodin laitteita.
+     * @param event
+     * @throws Exception 
+     */
     @FXML protected void devicesButtonAction(ActionEvent event) throws Exception {
         Stage stage;
         Parent root = FXMLLoader.load(getClass().getResource("fxml/AdminDevices.fxml"));
@@ -136,6 +141,12 @@ public class SceneController {
         stage.show();
     }
     
+    
+    /**
+     * Siirtää käyttäjän näkymään, jossa tämä voi luoda uusia käyttäjiä.
+     * @param event
+     * @throws Exception 
+     */
     @FXML protected void createUserButtonAction(ActionEvent event) throws Exception {
         Stage stage;
         Parent root = FXMLLoader.load(getClass().getResource("fxml/CreateUserView.fxml"));
@@ -149,6 +160,11 @@ public class SceneController {
         stage.show();
     }
 
+    /**
+     * Kirjaa käyttäjän ulos ja palaa takaisin kirjautumisnäkymään.
+     * @param event
+     * @throws Exception 
+     */
     @FXML protected void logOutButtonAction(ActionEvent event) throws Exception {
         Stage stage;
         Parent root = FXMLLoader.load(getClass().getResource("fxml/Login.fxml"));
@@ -162,6 +178,11 @@ public class SceneController {
         stage.show();
     }
     
+    /**
+     * Siirtää käyttäjän näkymään, jossa tämä voi poistaa muita käyttäjiä.
+     * @param event
+     * @throws Exception 
+     */
     @FXML protected void deleteUserButtonAction(ActionEvent event) throws Exception {
         Stage stage;
         Parent root = FXMLLoader.load(getClass().getResource("fxml/DeleteUser.fxml"));
@@ -175,6 +196,11 @@ public class SceneController {
         stage.show();
     }
     
+    /**
+     * Siirtää käyttäjän näkymään, jossa tämä voi vaihtaa käyttäjien salasanoja.
+     * @param event
+     * @throws Exception 
+     */
     @FXML protected void changePasswordButtonAction(ActionEvent event) throws Exception {
         Stage stage;
         Parent root = FXMLLoader.load(getClass().getResource("fxml/ChangePassword.fxml"));
@@ -211,6 +237,12 @@ public class SceneController {
     @FXML private Button createNewUser;
     @FXML private Button goBackUser;
     
+    /**
+     * Metodi käsittelee luotavalle käyttäjälle asetetut määritykset ja luo näiden pohjalta uuden käyttäjän.
+     * Metodi estää nimettömien ja samannimisten käyttäjien luonnin. 
+     * @param event
+     * @throws Exception 
+     */
     @FXML protected void createNewUserButtonAction(ActionEvent event) throws Exception {
         
         String newUsernameString = newUsername.getCharacters().toString();
@@ -280,8 +312,8 @@ public class SceneController {
             alert.setHeaderText("User creation successful");
             alert.setContentText("The program needs to be restarted in order for the new user to work on this machine. Do you want to do so now or later?");
 
-            ButtonType buttonTypeOne = new ButtonType("Restart now");
-            ButtonType buttonTypeCancel = new ButtonType("Restart later", ButtonData.CANCEL_CLOSE);
+            ButtonType buttonTypeOne = new ButtonType("Shut down and restart manually");
+            ButtonType buttonTypeCancel = new ButtonType("Later", ButtonData.CANCEL_CLOSE);
 
             alert.getButtonTypes().setAll(buttonTypeOne, buttonTypeCancel);
 
@@ -301,6 +333,11 @@ public class SceneController {
         
     }
     
+    /**
+     * Metodi palauttaa käyttäjän takaisin ylläpitäjän päänäkymään.
+     * @param event
+     * @throws Exception 
+     */
     @FXML protected void goBackUserButtonAction(ActionEvent event) throws Exception {
         Stage stage;
         Parent root = FXMLLoader.load(getClass().getResource("fxml/AdminView.fxml"));
@@ -317,10 +354,17 @@ public class SceneController {
     /**
      * DELETE USER VIEW
      */
+    
     @FXML private ChoiceBox userlistDelete;
     @FXML private Button deleteButton;
     @FXML private Button goBackDeleteButton;
     
+    /**
+     * Metodi kysyy käyttäjältä varmistuksen toisen käyttäjän poistosta.
+     * Jos käyttäjä varmistaa poiston, metodi poistaa ko. käyttäjän.
+     * @param event
+     * @throws Exception 
+     */
     @FXML protected void deleteButtonAction(ActionEvent event) throws Exception {
         String victim = (String)userlistDelete.getValue();
         
@@ -341,6 +385,12 @@ public class SceneController {
             } 
         
     }
+    
+    /**
+     * Metodi palauttaa käyttäjän takaisin ylläpitäjän päänäkymään.
+     * @param event
+     * @throws Exception 
+     */
     @FXML protected void goBackDeleteButtonAction(ActionEvent event) throws Exception {
         Stage stage;
         Parent root = FXMLLoader.load(getClass().getResource("fxml/AdminView.fxml"));
@@ -353,6 +403,11 @@ public class SceneController {
         stage.setScene(scene);    
         stage.show();
     }
+    
+    /**
+     * Metodi päivittää olemassa olevat käyttäjät listaan.
+     * @throws Exception 
+     */
     @FXML protected void userlistDeleteAction() throws Exception {
         client = new SHomeClient();
         userlistDelete.setItems(FXCollections.observableArrayList(client.getUsers()));
@@ -363,15 +418,25 @@ public class SceneController {
     /**
      * CHANGE PASSWORD VIEW
      */
+    
     @FXML private ChoiceBox userListPassword;
     @FXML private Button submitPasswordChangeButton;
     @FXML private PasswordField passwordToCome;
     
+    /**
+     * Metodi päivittää olemassa olevat käyttäjät listaan.
+     * @throws Exception 
+     */
     @FXML public void userListPasswordAction() throws Exception {
         client = new SHomeClient();
         userListPassword.setItems(FXCollections.observableArrayList(client.getUsers()));
     }
     
+    /**
+     * Metodi vaihtaa valitun käyttäjän salasanan annettuun syötteeseen. Tämän jälkeen metodi palauttaa käyttäjän takaisin ylläpitäjän päänäkymään.
+     * @param event
+     * @throws Exception 
+     */
     @FXML public void submitPasswordChangeButtonAction(ActionEvent event) throws Exception {
         String username = (String)userListPassword.getValue();
         client = new SHomeClient();
@@ -430,6 +495,12 @@ public class SceneController {
     @FXML Text homeFeedback;
     @FXML Text cottageFeedback;
     
+    /**
+     * Metodi laittaa valon päälle tai pois päältä, riippuen valon tilasta palvelimella.
+     * Metodi ilmoittaa laitteen muuttuneen tilan käyttäjälle tekstillä käyttöliittymässä.
+     * @param event
+     * @throws Exception 
+     */
     @FXML protected void light1ButtonAction(ActionEvent event) throws Exception {
         try{
             client = new SHomeClient();
@@ -548,6 +619,12 @@ public class SceneController {
         }    
     }
     
+    /**
+     * Metodi laittaa auki tai lukkoon, riippuen oven tilasta palvelimella.
+     * Metodi ilmoittaa laitteen muuttuneen tilan käyttäjälle tekstillä käyttöliittymässä.
+     * @param event
+     * @throws Exception 
+     */
     @FXML protected void door1ButtonAction(ActionEvent event) throws Exception {
         try{
             client = new SHomeClient();
@@ -588,6 +665,12 @@ public class SceneController {
             }
     }
     
+    /**
+     * Metodi laittaa TV:n päälle tai pois päältä, riippuen TV:n tilasta palvelimella.
+     * Metodi ilmoittaa laitteen muuttuneen tilan käyttäjälle tekstillä käyttöliittymässä.
+     * @param event
+     * @throws Exception 
+     */
     @FXML protected void tv1ButtonAction(ActionEvent event) throws Exception {
         try{
             client = new SHomeClient();
@@ -628,6 +711,12 @@ public class SceneController {
             }
     }
     
+    /**
+     * Metodi laittaa stereon päälle tai pois päältä, riippuen stereon tilasta palvelimella.
+     * Metodi ilmoittaa laitteen muuttuneen tilan käyttäjälle tekstillä käyttöliittymässä.
+     * @param event
+     * @throws Exception 
+     */
     @FXML protected void stereo1ButtonAction(ActionEvent event) throws Exception {
         try{
             client = new SHomeClient();
@@ -668,55 +757,140 @@ public class SceneController {
         }
     }
     
+    /**
+     * Metodi asettaa asunnolle uuden huoneenlämpötilan tai kosteuden.
+     * @param event
+     * @throws Exception 
+     */
     @FXML protected void homeSetTemperatureButtonAction(ActionEvent event) throws Exception {
-        Stage stage;
-        Parent root = FXMLLoader.load(getClass().getResource("fxml/ChangeTemperatureHome.fxml"));
         
-        stage=(Stage) homeSetTemperature.getScene().getWindow();
-        
-        Scene scene = new Scene(root, 600, 550);
-        
-        stage.setTitle("sHome - Change temperature");            
-        stage.setScene(scene);    
-        stage.show();
+        client = new SHomeClient();
+                  
+        Alert alert = new Alert(AlertType.CONFIRMATION);
+            alert.setTitle("");
+            alert.setHeaderText("Choose the temperature you want from these presets.");
+            alert.setContentText("Current apartment temperature is: " + Double.toString(client.getTemperatureValue("home")) + "°C");
+
+            ButtonType buttonTypeOne = new ButtonType("17.2°C");
+            ButtonType buttonTypeTwo = new ButtonType("18.0°C");
+            ButtonType buttonTypeThree = new ButtonType("19.5°C");
+            ButtonType buttonTypeCancel = new ButtonType("Cancel", ButtonData.CANCEL_CLOSE);
+
+            alert.getButtonTypes().setAll(buttonTypeOne, buttonTypeTwo, buttonTypeThree, buttonTypeCancel);
+
+            Optional<ButtonType> result = alert.showAndWait();
+            
+            if (result.get() == buttonTypeOne){
+                client.setTemperatureValue("home", 17.2);
+                homeFeedback.setText("Temperature is now set to " + Double.toString(client.getTemperatureValue("home")) + "°C!");
+            }
+            if (result.get() == buttonTypeTwo){
+                client.setTemperatureValue("home", 18.0);
+                homeFeedback.setText("Temperature is now set to " + Double.toString(client.getTemperatureValue("home")) + "°C!");
+            } 
+            if (result.get() == buttonTypeThree){
+                client.setTemperatureValue("home", 19.5);
+                homeFeedback.setText("Temperature is now set to " + Double.toString(client.getTemperatureValue("home")) + "°C!");
+            } 
     }
     @FXML protected void homeSetHumidityButtonAction(ActionEvent event) throws Exception {
-        Stage stage;
-        Parent root = FXMLLoader.load(getClass().getResource("fxml/ChangeHumidityHome.fxml"));
         
-        stage=(Stage) homeSetHumidity.getScene().getWindow();
-        
-        Scene scene = new Scene(root, 600, 550);
-        
-        stage.setTitle("sHome - Change humidity");            
-        stage.setScene(scene);    
-        stage.show();
+        client = new SHomeClient();
+                  
+        Alert alert = new Alert(AlertType.CONFIRMATION);
+            alert.setTitle("");
+            alert.setHeaderText("Choose the humidity you want from these presets.");
+            alert.setContentText("Current apartment humidity is: " + Double.toString(client.getHumidityValue("home")) + "%");
+
+            ButtonType buttonTypeOne = new ButtonType("47.5%");
+            ButtonType buttonTypeTwo = new ButtonType("50.0%");
+            ButtonType buttonTypeThree = new ButtonType("55.0%");
+            ButtonType buttonTypeCancel = new ButtonType("Cancel", ButtonData.CANCEL_CLOSE);
+
+            alert.getButtonTypes().setAll(buttonTypeOne, buttonTypeTwo, buttonTypeThree, buttonTypeCancel);
+
+            Optional<ButtonType> result = alert.showAndWait();
+            
+            if (result.get() == buttonTypeOne){
+                client.setHumidityValue("home", 47.5);
+                homeFeedback.setText("Humidity is now set to " + Double.toString(client.getHumidityValue("home")) + "%!");
+            }
+            if (result.get() == buttonTypeTwo){
+                client.setHumidityValue("home", 50.0);
+                homeFeedback.setText("Humidity is now set to " + Double.toString(client.getHumidityValue("home")) + "%!");
+            } 
+            if (result.get() == buttonTypeThree){
+                client.setHumidityValue("home", 55.0);
+                homeFeedback.setText("Humidity is now set to " + Double.toString(client.getHumidityValue("home")) + "%!");
+            } 
     }
     @FXML protected void cottageSetTemperatureButtonAction(ActionEvent event) throws Exception {
-        Stage stage;
-        Parent root = FXMLLoader.load(getClass().getResource("fxml/ChangeTemperatureCottage.fxml"));
         
-        stage=(Stage) cottageSetTemperature.getScene().getWindow();
-        
-        Scene scene = new Scene(root, 600, 550);
-        
-        stage.setTitle("sHome - Change temperature");            
-        stage.setScene(scene);    
-        stage.show();
+        client = new SHomeClient();
+                  
+        Alert alert = new Alert(AlertType.CONFIRMATION);
+            alert.setTitle("");
+            alert.setHeaderText("Choose the temperature you want from these presets.");
+            alert.setContentText("Current apartment temperature is: " + Double.toString(client.getTemperatureValue("cottage")) + "°C");
+
+            ButtonType buttonTypeOne = new ButtonType("13.0°C");
+            ButtonType buttonTypeTwo = new ButtonType("17.2°C");
+            ButtonType buttonTypeThree = new ButtonType("18.0°C");
+            ButtonType buttonTypeCancel = new ButtonType("Cancel", ButtonData.CANCEL_CLOSE);
+
+            alert.getButtonTypes().setAll(buttonTypeOne, buttonTypeTwo, buttonTypeThree, buttonTypeCancel);
+
+            Optional<ButtonType> result = alert.showAndWait();
+            
+            if (result.get() == buttonTypeOne){
+                client.setTemperatureValue("cottage", 13.0);
+                cottageFeedback.setText("Temperature is now set to " + Double.toString(client.getTemperatureValue("cottage")) + "°C!");
+            }
+            if (result.get() == buttonTypeTwo){
+                client.setTemperatureValue("cottage", 17.2);
+                cottageFeedback.setText("Temperature is now set to " + Double.toString(client.getTemperatureValue("cottage")) + "°C!");             } 
+            if (result.get() == buttonTypeThree){
+                client.setTemperatureValue("cottage", 18.0);
+                cottageFeedback.setText("Temperature is now set to " + Double.toString(client.getTemperatureValue("cottage")) + "°C!");      
+            } 
     }
     @FXML protected void cottageSetHumidityButtonAction(ActionEvent event) throws Exception {
-        Stage stage;
-        Parent root = FXMLLoader.load(getClass().getResource("fxml/ChangeHumidityCottage.fxml"));
         
-        stage=(Stage) cottageSetHumidity.getScene().getWindow();
-        
-        Scene scene = new Scene(root, 600, 550);
-        
-        stage.setTitle("sHome - Change humidity");            
-        stage.setScene(scene);    
-        stage.show();
+        client = new SHomeClient();
+                  
+        Alert alert = new Alert(AlertType.CONFIRMATION);
+            alert.setTitle("");
+            alert.setHeaderText("Choose the humidity you want from these presets.");
+            alert.setContentText("Current apartment humidity is: " + Double.toString(client.getHumidityValue("cottage")) + "%");
+
+            ButtonType buttonTypeOne = new ButtonType("47.5%");
+            ButtonType buttonTypeTwo = new ButtonType("50.0%");
+            ButtonType buttonTypeThree = new ButtonType("55.0%");
+            ButtonType buttonTypeCancel = new ButtonType("Cancel", ButtonData.CANCEL_CLOSE);
+
+            alert.getButtonTypes().setAll(buttonTypeOne, buttonTypeTwo, buttonTypeThree, buttonTypeCancel);
+
+            Optional<ButtonType> result = alert.showAndWait();
+            
+            if (result.get() == buttonTypeOne){
+                client.setHumidityValue("cottage", 47.5);
+                cottageFeedback.setText("Humidity is now set to " + Double.toString(client.getHumidityValue("cottage")) + "%!");
+            }
+            if (result.get() == buttonTypeTwo){
+                client.setHumidityValue("cottage", 50.0);
+                cottageFeedback.setText("Humidity is now set to " + Double.toString(client.getHumidityValue("cottage")) + "%!");
+            } 
+            if (result.get() == buttonTypeThree){
+                client.setHumidityValue("cottage", 55.0);
+                cottageFeedback.setText("Humidity is now set to " + Double.toString(client.getHumidityValue("cottage")) + "%!");
+            } 
     }
     
+    /**
+     * Metodi kirjaa käyttäjän ulos ja palaa takaisin kirjautumisnäkymään.
+     * @param event
+     * @throws Exception 
+     */
     @FXML protected void logOutButtonDevicesAction(ActionEvent event) throws Exception {
         Stage stage;
         Parent root = FXMLLoader.load(getClass().getResource("fxml/Login.fxml"));
@@ -730,6 +904,11 @@ public class SceneController {
         stage.show();
     }
     
+    /**
+     * Metodi palauttaa käyttäjän takaisin ylläpitäjän päänäkymään.
+     * @param event
+     * @throws Exception 
+     */
     @FXML protected void goBackDevicesButtonAction(ActionEvent event) throws Exception {
         Stage stage;
         Parent root = FXMLLoader.load(getClass().getResource("fxml/AdminView.fxml"));
@@ -743,10 +922,20 @@ public class SceneController {
         stage.show();
     }
     
-    //Kutsuu päivitysmetodin manuaalisesti ohjelmaan
+    /**
+     * Metodi kutsuu päivitysmetodin ohjelmaan.
+     * @param Event
+     * @throws Exception 
+     */
     @FXML protected void refreshDevicesButtonAction(ActionEvent Event) throws Exception {
         updaterThread();
     }
+    
+    
+    
+    /**
+     * APUMETODIT 
+     */
     
     /**
      * Päivittää ikkunan sekunnin välein kutsumalla update-metodia.
@@ -767,6 +956,10 @@ public class SceneController {
         t.start();
     }
     
+    /**
+     * Metodi käy yksi kerrallaan laitteiden tilat läpi ja asettaa niiden näkymän käyttöliittymässä sen mukaisesti. 
+     * @throws Exception 
+     */
     public void update() throws Exception {
         client = new SHomeClient();
         
@@ -796,94 +989,6 @@ public class SceneController {
     }
     
     /**
-     * CHANGE TEMPERATURE/HUMIDITY VIEWS
-     */
-    @FXML private Button changeTemperatureHomeButton;
-    @FXML private Button changeHumidityHomeButton;
-    @FXML private Button changeTemperatureCottageButton;
-    @FXML private Button changeHumidityCottageButton;
-    
-    @FXML private Slider temperatureSliderHome;
-    @FXML private Slider humiditySliderHome;
-    @FXML private Slider temperatureSliderCottage;
-    @FXML private Slider humiditySliderCottage;
-
-    @FXML protected void changeTemperatureHomeButtonAction(ActionEvent event) throws Exception {
-        /*double value = temperatureSliderHome.getValue();
-        client = new SHomeClient();
-        client.setTemperatureValue("home", value);
-        System.out.println("Lämpötila on säädetty nyt arvoon " + client.getTemperatureValue("home"));
-        
-        Stage stage;
-        Parent root = FXMLLoader.load(getClass().getResource());
-        
-        stage = (Stage) changeTemperatureHomeButton.getScene().getWindow();
-        
-        Scene scene = new Scene(root, 600, 550);
-        
-        stage.setTitle("sHome - Welcome");
-        stage.setScene(scene);
-        stage.show();*/
-    }
-    @FXML protected void changeHumidityHomeButtonAction(ActionEvent event) throws Exception {
-        /*double value = humiditySliderHome.getValue();
-        client = new SHomeClient();
-        client.setHumidityValue("home", value);
-        System.out.println("Ilmankosteus on säädetty nyt arvoon " + client.getHumidityValue("home"));
-        
-        Stage stage;
-        Parent root = FXMLLoader.load(getClass().getResource(viewPath));
-        
-        stage=(Stage) changeHumidityHomeButton.getScene().getWindow();
-        
-        Scene scene = new Scene(root, 600, 550);
-        
-        stage.setTitle("sHome - Welcome");
-        stage.setScene(scene);
-        stage.show();*/
-    }
-    
-    @FXML protected void changeTemperatureCottageButtonAction(ActionEvent event) throws Exception {
-        /*double value = temperatureSliderCottage.getValue();
-        client = new SHomeClient();
-        client.setTemperatureValue("cottage", value);
-        System.out.println("Lämpötila on säädetty nyt arvoon " + client.getTemperatureValue("cottage"));
-        
-        Stage stage;
-        Parent root = FXMLLoader.load(getClass().getResource(viewPath));
-        
-        stage=(Stage) changeTemperatureCottageButton.getScene().getWindow();
-        
-        Scene scene = new Scene(root, 600, 550);
-        
-        stage.setTitle("sHome - Welcome");
-        stage.setScene(scene);
-        stage.show();*/
-    }
-    @FXML protected void changeHumidityCottageButtonAction(ActionEvent event) throws Exception {
-        /*double value = humiditySliderCottage.getValue();
-        client = new SHomeClient();
-        client.setHumidityValue("cottage", value);
-        System.out.println("Ilmankosteus on säädetty nyt arvoon " + client.getHumidityValue("cottage"));
-        
-        Stage stage;
-        Parent root = FXMLLoader.load(getClass().getResource(viewPath));
-        
-        stage=(Stage) changeHumidityCottageButton.getScene().getWindow();
-        
-        Scene scene = new Scene(root, 600, 550);
-        
-        stage.setTitle("sHome - Welcome");
-        stage.setScene(scene);
-        stage.show();*/
-    }
-    
-    
-    /**
-     * APUMETODIT 
-     */
-    
-    /**
      * Lähettää palvelimelle pyydön tiedoston lähettämisen, sitten vastaanottaa kyseisen tiedoston ja tallentaa sen src/shome/fxml/ -kansioon. 
      * Käytä metodia ainoastaan FXML-tyyppisten tiedostojen hakemiseen!
      * @param filename vastaanotettavan tiedoston nimi
@@ -892,7 +997,7 @@ public class SceneController {
         
         try {
            client = new SHomeClient();    
-           client.startSendFile(filename); // Orders the server to send the file. 
+           client.startSendFile(filename); // Asks the server to send the file. 
         } catch (Exception e) { }
         
         System.out.println("Yritetään siirtää tiedosto " + filename + " palvelimelta asiakkaalle...");
@@ -917,7 +1022,7 @@ public class SceneController {
             FileOutputStream fos = null;
             BufferedOutputStream bos = null;
             try {
-                fos = new FileOutputStream("src\\shome\\fxml\\" + filename);
+                fos = new FileOutputStream("shome\\fxml\\" + filename);
                 bos = new BufferedOutputStream(fos);
                 bytesRead = is.read(aByte, 0, aByte.length);
                 
